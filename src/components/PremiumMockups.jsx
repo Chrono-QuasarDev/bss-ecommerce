@@ -85,7 +85,7 @@ export const PremiumMockups = () => {
       {/* Ambient background glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-r from-amber-500/10 via-purple-500/5 to-cyan-500/5 blur-[160px] pointer-events-none -z-10" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Vault Header */}
         <div className="glass-panel rounded-3xl p-6 sm:p-10 lg:p-12 border border-white/15 mb-10 sm:mb-14 relative overflow-hidden">

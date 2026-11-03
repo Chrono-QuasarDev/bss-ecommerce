@@ -235,8 +235,8 @@ export function App() {
         isLiveSynced={sheetStatus === 'synced'}
       />
 
-      {/* Footer - Keeping Backstage & Merchant CMS Intact */}
-      <Footer onOpenSheetConfig={() => setIsSheetConfigOpen(true)} />
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

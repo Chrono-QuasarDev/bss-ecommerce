@@ -16,7 +16,7 @@ export const ProductGrid = ({
   // 1. Deliberate, high-contrast loading state
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
+      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
         {/* Visible deliberate loading status banner */}
         <div className="glass-panel rounded-2xl p-6 border border-white/15 bg-white/[0.04] mb-8 text-center flex items-center justify-center gap-3">
           <Loader2 className="w-5 h-5 animate-spin text-amber-300" />
@@ -52,7 +52,7 @@ export const ProductGrid = ({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-14 sm:pt-8 sm:pb-20">
+    <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-14 sm:pt-8 sm:pb-20">
       
       {/* Non-blocking sync error banner if Google Sheets sync failed but cached catalog is shown */}
       {error && (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Check, Eye } from 'lucide-react';
 import { formatGHS } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
+import { CONFIG } from '../config';
 
 export const ProductCard = ({ product, onQuickView }) => {
   const { cart, addToCart } = useCart();
