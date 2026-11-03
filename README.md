@@ -45,11 +45,15 @@ You do not need to pay for Supabase, Firebase, or MongoDB. You can use Google Sh
          data.totalAmount,
          data.currency,
          JSON.stringify(data.items),
-         data.orderText
+         data.orderText,
        ]);
-       return ContentService.createTextOutput("OK").setMimeType(ContentService.MimeType.TEXT);
+       return ContentService.createTextOutput("OK").setMimeType(
+         ContentService.MimeType.TEXT,
+       );
      } catch (err) {
-       return ContentService.createTextOutput("ERROR: " + err.message).setMimeType(ContentService.MimeType.TEXT);
+       return ContentService.createTextOutput(
+         "ERROR: " + err.message,
+       ).setMimeType(ContentService.MimeType.TEXT);
      }
    }
    ```
@@ -57,7 +61,7 @@ You do not need to pay for Supabase, Firebase, or MongoDB. You can use Google Sh
    - Type: **Web app**
    - Execute as: **Me**
    - Who has access: **Anyone**
-5. Copy the Web App URL and paste it into `src/config.js` (`CONFIG.WEBHOOK_URL`).
+5. Copy the Web App URL into `VITE_WEBHOOK_URL` in your local `.env` file.
 
 ---
 
@@ -67,9 +71,14 @@ You do not need to pay for Supabase, Firebase, or MongoDB. You can use Google Sh
 # Install dependencies
 npm install
 
+# Create a local environment file from the example, then set the store values
+cp .env.example .env
+
 # Start local development server
 npm run dev
 
 # Build optimized production bundle
 npm run build
 ```
+
+Vite embeds every `VITE_*` value in the client bundle. Treat these as public configuration, not secrets. In particular, `VITE_VIP_PIN` is visible to anyone who can access the site and only provides a demo lock; use server-side verification for real access control. Set the same `VITE_*` variables in your hosting provider's build environment for production.

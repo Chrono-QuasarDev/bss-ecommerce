@@ -14,7 +14,7 @@ import { CONFIG } from './config';
 
 export function App() {
   const [products, setProducts] = useState(CONFIG.FALLBACK_PRODUCTS);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sheetStatus, setSheetStatus] = useState('cached');
 
@@ -33,25 +33,26 @@ export function App() {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   /**
-   * Google Sheets CMS Fetcher
+   * Google Sheets CMS Fetcher with Timeout & Fallback Safety
    */
   const loadProducts = async (targetUrl) => {
+    const sheetUrl = targetUrl || customSheetUrl;
+
+    // If unconfigured or placeholder URL, immediately use curated fallback without delay
+    if (!sheetUrl || sheetUrl.includes('placeholder') || sheetUrl.includes('REPLACE_WITH')) {
+      setProducts(CONFIG.FALLBACK_PRODUCTS);
+      setSheetStatus('cached');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    const sheetUrl = targetUrl || customSheetUrl;
-
     try {
-      if (!sheetUrl || sheetUrl.includes('placeholder')) {
-        setProducts(CONFIG.FALLBACK_PRODUCTS);
-        setSheetStatus('cached');
-        setLoading(false);
-        return;
-      }
+      const fetchedProducts = await fetchProductsFromGoogleSheet(sheetUrl, 4500);
 
-      const fetchedProducts = await fetchProductsFromGoogleSheet(sheetUrl);
-
-      if (fetchedProducts.length > 0) {
+      if (fetchedProducts && fetchedProducts.length > 0) {
         setProducts(fetchedProducts);
         setSheetStatus('synced');
       } else {
@@ -60,6 +61,7 @@ export function App() {
     } catch (err) {
       console.warn('[Atelier CMS] Google Sheets Notice:', err.message);
       setError(err.message);
+      // Guarantee products are always available via cached collection
       setProducts(CONFIG.FALLBACK_PRODUCTS);
       setSheetStatus('cached');
     } finally {
@@ -85,7 +87,7 @@ export function App() {
     loadProducts(newUrl);
   };
 
-  // Extract unique categories
+  // Derive unique categories from available products
   const categories = useMemo(() => {
     const set = new Set();
     products.forEach((p) => {
@@ -94,15 +96,32 @@ export function App() {
     return ['All', ...Array.from(set)];
   }, [products]);
 
-  // Compute category counts
+  // Compute category counts taking into account any active search query so counts never disagree with results
   const categoryCounts = useMemo(() => {
-    const counts = { All: products.length };
+    const counts = { All: 0 };
+    categories.forEach((cat) => {
+      counts[cat] = 0;
+    });
+
+    const trimmedQuery = searchQuery.toLowerCase().trim();
+
     products.forEach((p) => {
       const cat = p.category ? p.category.trim() : 'General';
-      counts[cat] = (counts[cat] || 0) + 1;
+      const matchesSearch = !trimmedQuery || (
+        (p.name && p.name.toLowerCase().includes(trimmedQuery)) ||
+        (p.category && p.category.toLowerCase().includes(trimmedQuery)) ||
+        (p.description && p.description.toLowerCase().includes(trimmedQuery)) ||
+        (p.fabric && p.fabric.toLowerCase().includes(trimmedQuery))
+      );
+
+      if (matchesSearch) {
+        counts.All = (counts.All || 0) + 1;
+        counts[cat] = (counts[cat] || 0) + 1;
+      }
     });
+
     return counts;
-  }, [products]);
+  }, [products, categories, searchQuery]);
 
   // Client-Side Search, Category Filtering & Sorting
   const filteredProducts = useMemo(() => {
@@ -118,7 +137,7 @@ export function App() {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(
         (p) =>
-          p.name.toLowerCase().includes(query) ||
+          (p.name && p.name.toLowerCase().includes(query)) ||
           (p.category && p.category.toLowerCase().includes(query)) ||
           (p.description && p.description.toLowerCase().includes(query)) ||
           (p.fabric && p.fabric.toLowerCase().includes(query))
@@ -137,14 +156,22 @@ export function App() {
     return result;
   }, [products, selectedCategory, searchQuery, sortBy]);
 
+  const handleResetFilters = () => {
+    setSelectedCategory('All');
+    setSearchQuery('');
+  };
+
   return (
     <div className="min-h-screen bg-[#060607] text-[#f2f2f4] flex flex-col font-sans selection:bg-amber-300 selection:text-black">
       {/* Top Navbar */}
       <Navbar
         onOpenSheetConfig={() => setIsSheetConfigOpen(true)}
         onOpenSearch={() => {
-          const el = document.getElementById('catalog-section');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
+          const el = document.getElementById('catalog-search');
+          if (el) {
+            el.focus();
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         }}
       />
 
@@ -175,6 +202,9 @@ export function App() {
           error={error}
           onRetry={() => loadProducts(customSheetUrl)}
           activeCategory={selectedCategory}
+          searchQuery={searchQuery}
+          onClearSearch={() => setSearchQuery('')}
+          onResetFilters={handleResetFilters}
           onQuickView={(p) => setQuickViewProduct(p)}
         />
 
@@ -205,7 +235,7 @@ export function App() {
         isLiveSynced={sheetStatus === 'synced'}
       />
 
-      {/* Footer */}
+      {/* Footer - Keeping Backstage & Merchant CMS Intact */}
       <Footer onOpenSheetConfig={() => setIsSheetConfigOpen(true)} />
     </div>
   );

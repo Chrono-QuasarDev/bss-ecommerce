@@ -55,7 +55,11 @@ const normalizeHeaderKey = (header) => {
   if (['category', 'cat', 'collection', 'type'].includes(clean)) return 'category';
   if (['price', 'cost', 'amount', 'ghs', 'cedis'].includes(clean)) return 'price';
   if (['image', 'img', 'imageurl', 'photo', 'picture'].includes(clean)) return 'image';
+  if (['secondaryimage', 'secondaryimg', 'hoverimage', 'lookbookimage'].includes(clean)) return 'secondaryImage';
   if (['description', 'desc', 'details'].includes(clean)) return 'description';
+  if (['fabric', 'material', 'composition'].includes(clean)) return 'fabric';
+  if (['badge', 'tag', 'status'].includes(clean)) return 'badge';
+  if (['stock', 'quantity', 'inventory'].includes(clean)) return 'stock';
   return clean;
 };
 
@@ -76,7 +80,7 @@ export const cleanPrice = (rawPrice) => {
 /**
  * Parse raw CSV string into an array of product objects
  * @param {string} csvText
- * @returns {Array<{id: string, name: string, category: string, price: number, image: string, description?: string}>}
+ * @returns {Array<{id: string, name: string, category: string, price: number, image: string, description?: string, fabric?: string, badge?: string, stock?: number}>}
  */
 export const parseProductsFromCSV = (csvText) => {
   if (!csvText || typeof csvText !== 'string') return [];
@@ -102,8 +106,12 @@ export const parseProductsFromCSV = (csvText) => {
     const name = rawObj.name || `Atelier Piece #${i}`;
     const category = rawObj.category || 'General';
     const price = cleanPrice(rawObj.price);
-    const image = rawObj.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80';
+    const image = rawObj.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=85';
+    const secondaryImage = rawObj.secondaryimage || rawObj.secondaryImage || '';
     const description = rawObj.description || 'Monochromatic essential piece engineered with minimalist proportions.';
+    const fabric = rawObj.fabric || 'Heavyweight Combed Cotton';
+    const badge = rawObj.badge || '';
+    const stock = rawObj.stock ? parseInt(rawObj.stock, 10) : undefined;
 
     if (name) {
       products.push({
@@ -112,7 +120,11 @@ export const parseProductsFromCSV = (csvText) => {
         category,
         price,
         image,
+        secondaryImage,
         description,
+        fabric,
+        badge,
+        stock,
       });
     }
   }
@@ -122,32 +134,53 @@ export const parseProductsFromCSV = (csvText) => {
 
 /**
  * Fetch and parse products from a published Google Sheet CSV URL
+ * Includes AbortController timeout to prevent unresolved network hangs.
+ *
  * @param {string} url
+ * @param {number} timeoutMs
  * @returns {Promise<Array<Object>>}
  */
-export const fetchProductsFromGoogleSheet = async (url) => {
+export const fetchProductsFromGoogleSheet = async (url, timeoutMs = 4500) => {
   if (!url) {
     throw new Error('Google Sheet CSV URL is missing.');
   }
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Accept: 'text/csv, text/plain, */*',
-    },
-    cache: 'no-cache',
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to load Google Sheet (HTTP ${response.status})`);
+  // Prevent fetching unconfigured placeholder strings
+  if (url.includes('placeholder') || url.includes('REPLACE_WITH')) {
+    throw new Error('Google Sheet CSV URL is a placeholder.');
   }
 
-  const csvText = await response.text();
-  const products = parseProductsFromCSV(csvText);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!products.length) {
-    throw new Error('No valid product rows found in published Google Sheet CSV.');
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'text/csv, text/plain, */*',
+      },
+      cache: 'no-cache',
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Failed to load Google Sheet (HTTP ${response.status})`);
+    }
+
+    const csvText = await response.text();
+    const products = parseProductsFromCSV(csvText);
+
+    if (!products.length) {
+      throw new Error('No valid product rows found in published Google Sheet CSV.');
+    }
+
+    return products;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error('Google Sheets request timed out.');
+    }
+    throw err;
   }
-
-  return products;
 };

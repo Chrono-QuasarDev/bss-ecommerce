@@ -7,9 +7,9 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
   const { totalItems, openCart, orderHistory, openOrderHistory } = useCart();
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-300">
-      {/* Editorial Announcement Bar */}
-      <div className="bg-[#050507] text-[#9ca3af] text-[10px] sm:text-[11px] uppercase tracking-[0.22em] py-2 px-4 text-center font-mono flex items-center justify-center gap-3 sm:gap-6 border-b border-white/[0.06]">
+    <>
+      {/* Editorial Announcement Bar (Scrolls naturally with page so mobile viewport is never clipped) */}
+      <div className="bg-[#050507] text-neutral-300 text-xs uppercase tracking-[0.18em] py-2.5 px-4 text-center font-mono flex items-center justify-center gap-3 sm:gap-6 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -17,41 +17,42 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
           </span>
           <span className="text-white font-medium">ACCRA ATELIER DIRECT</span>
         </div>
-        <span className="hidden sm:inline text-neutral-700">✦</span>
-        <span className="hidden sm:inline text-neutral-300">SAME-DAY DISPATCH (GREATER ACCRA)</span>
-        <span className="hidden md:inline text-neutral-700">✦</span>
-        <span className="hidden md:inline text-amber-300/80">WHATSAPP DIRECT CONCIERGE</span>
+        <span className="hidden sm:inline text-neutral-600">✦</span>
+        <span className="hidden sm:inline text-neutral-300">FREE SAME-DAY DISPATCH WITHIN GREATER ACCRA</span>
+        <span className="hidden md:inline text-neutral-600">✦</span>
+        <span className="hidden md:inline text-amber-300">WHATSAPP DIRECT CONCIERGE</span>
       </div>
 
-      {/* Main Glass Navigation Bar */}
-      <div className="bg-[#09090c]/85 backdrop-blur-2xl border-b border-white/[0.08] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      {/* Main Glass Navigation Bar (Sticky top-0: h-16 on mobile, h-20 on desktop) */}
+      <header className="sticky top-0 z-40 w-full bg-[#09090c]/90 backdrop-blur-2xl border-b border-white/[0.08] transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
           
-          {/* Brand Identity with Haute-Couture Typography */}
+          {/* Brand Identity */}
           <div className="flex items-center gap-6">
             <a
               href="#"
-              className="group flex flex-col items-start focus:outline-none"
+              className="group flex flex-col items-start focus:outline-none focus:ring-2 focus:ring-amber-300/70 rounded-lg p-1 -m-1"
+              aria-label={`${CONFIG.STORE_NAME} - Home`}
             >
               <div className="flex items-center gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-[0.28em] uppercase text-white font-heading group-hover:text-amber-200 transition-colors duration-300">
+                <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-[0.24em] uppercase text-white font-heading group-hover:text-amber-200 transition-colors duration-300">
                   {CONFIG.STORE_NAME}
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 border border-white/20 text-neutral-300 bg-white/[0.04] rounded-sm hidden sm:inline">
-                  ACCRA
+                <span className="text-[10px] font-mono px-2 py-0.5 border border-white/20 text-neutral-200 bg-white/[0.06] rounded-sm hidden sm:inline">
+                  {CONFIG.STORE_CITY.toUpperCase()}
                 </span>
               </div>
-              <span className="text-[9px] font-mono tracking-[0.3em] text-neutral-400 uppercase -mt-0.5">
-                HAUTE MINIMALISM • GH₵
+              <span className="text-[10px] font-mono tracking-[0.28em] text-neutral-400 uppercase -mt-0.5">
+                HAUTE MINIMALISM • {CONFIG.CURRENCY_CODE}
               </span>
             </a>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 font-mono text-xs tracking-wider">
+          <nav className="hidden lg:flex items-center gap-1 font-mono text-xs tracking-wider" aria-label="Main Navigation">
             <a
               href="#catalog-section"
-              className="px-4 py-2 text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 hover:bg-white/[0.04] rounded-full"
+              className="px-4 py-2 text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 hover:bg-white/[0.06] rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300/70"
             >
               <Compass className="w-3.5 h-3.5" />
               <span>COLLECTION</span>
@@ -59,7 +60,7 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
 
             <a
               href="#mockups-section"
-              className="px-4 py-2 text-amber-300/90 hover:text-amber-200 transition-colors flex items-center gap-1.5 hover:bg-amber-400/[0.08] rounded-full border border-amber-400/20"
+              className="px-4 py-2 text-amber-300 hover:text-amber-200 transition-colors flex items-center gap-1.5 hover:bg-amber-400/[0.1] rounded-full border border-amber-400/25 focus:outline-none focus:ring-2 focus:ring-amber-300/70"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>VIP VAULT</span>
@@ -73,7 +74,7 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
               <button
                 onClick={onOpenSearch}
                 aria-label="Search Collection"
-                className="p-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-full border border-transparent hover:border-white/10 transition-all"
+                className="p-2.5 text-neutral-300 hover:text-white hover:bg-white/[0.08] rounded-full border border-transparent hover:border-white/15 transition-all focus:outline-none focus:ring-2 focus:ring-amber-300/70"
                 title="Search garments"
               >
                 <Search className="w-4 h-4" />
@@ -83,11 +84,11 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
             {/* My Orders History Button */}
             <button
               onClick={openOrderHistory}
-              aria-label="Order History"
-              className="flex items-center gap-2 px-3.5 py-2 text-xs font-mono tracking-widest text-neutral-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/25 rounded-full transition-all duration-200"
+              aria-label={`Order History (${orderHistory.length} orders)`}
+              className="flex items-center gap-2 px-3 sm:px-3.5 py-2 text-xs font-mono tracking-widest text-neutral-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/15 hover:border-white/30 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-300/70"
               title="Track previous orders"
             >
-              <Clock className="w-3.5 h-3.5" />
+              <Clock className="w-3.5 h-3.5 text-amber-300" />
               <span className="hidden sm:inline">MY ORDERS</span>
               {orderHistory.length > 0 && (
                 <span className="inline-flex items-center justify-center bg-white text-black text-[10px] w-4 h-4 rounded-full font-bold">
@@ -99,18 +100,18 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
             {/* CMS Config Button for Client/Testing */}
             <button
               onClick={onOpenSheetConfig}
-              aria-label="Google Sheets CMS"
-              className="hidden md:flex p-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-full border border-transparent hover:border-white/10 transition-all"
+              aria-label="Configure Google Sheets CMS"
+              className="hidden md:flex p-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.08] rounded-full border border-transparent hover:border-white/15 transition-all focus:outline-none focus:ring-2 focus:ring-amber-300/70"
               title="Configure Google Sheet CMS"
             >
               <ShieldCheck className="w-4 h-4" />
             </button>
 
-            {/* Slide-out Cart Trigger Button with Glow Pill */}
+            {/* Slide-out Cart Trigger Button */}
             <button
               onClick={openCart}
-              aria-label="Open Shopping Cart"
-              className="group relative flex items-center gap-2.5 bg-gradient-to-r from-neutral-100 to-white text-black hover:from-amber-200 hover:to-amber-100 px-4 sm:px-5 py-2.5 text-xs font-mono uppercase tracking-[0.18em] font-bold rounded-full transition-all duration-300 shadow-glow-sm hover:shadow-glow hover:scale-[1.02] active:scale-[0.98]"
+              aria-label={`Shopping Bag (${totalItems} items)`}
+              className="group relative flex items-center gap-2 sm:gap-2.5 bg-gradient-to-r from-neutral-100 to-white text-black hover:from-amber-200 hover:to-amber-100 px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs font-mono uppercase tracking-[0.16em] font-bold rounded-full transition-all duration-300 shadow-glow-sm hover:shadow-glow hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-amber-300/70"
             >
               <ShoppingBag className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
               <span className="hidden sm:inline">BAG</span>
@@ -120,7 +121,7 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
             </button>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };

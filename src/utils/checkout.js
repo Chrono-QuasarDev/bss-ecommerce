@@ -3,7 +3,7 @@
  * Manages order string generation, free webhook tracking, and WhatsApp redirection.
  */
 
-import { formatGHS } from './formatters';
+import { formatGHS } from './formatters.js';
 
 /**
  * Format the exact order summary string required for WhatsApp concierge

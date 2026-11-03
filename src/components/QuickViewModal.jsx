@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { X, Plus, Check, ShieldCheck, ShoppingBag, Sparkles, Send } from 'lucide-react';
+import { X, Check, ShoppingBag, Sparkles } from 'lucide-react';
 import { formatGHS } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
-import { CONFIG } from '../config';
 
 export const QuickViewModal = ({ product, isOpen, onClose }) => {
   if (!isOpen || !product) return null;
@@ -37,10 +36,10 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="quickview-title">
       {/* Blurred Backdrop */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity"
         onClick={onClose}
       />
 
@@ -49,9 +48,10 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
           
           {/* Close button */}
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-5 right-5 z-10 p-2.5 rounded-full bg-black/60 hover:bg-white text-neutral-400 hover:text-black border border-white/15 transition-all"
-            aria-label="Close"
+            className="absolute top-5 right-5 z-10 p-2.5 rounded-full bg-black/70 hover:bg-white text-neutral-300 hover:text-black border border-white/20 transition-all focus:outline-none focus:ring-2 focus:ring-amber-300"
+            aria-label="Close modal"
           >
             <X className="w-4 h-4" />
           </button>
@@ -81,11 +81,12 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                       key={i}
                       type="button"
                       onClick={() => setActiveImage(imgUrl)}
-                      className={`w-16 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                        activeImage === imgUrl ? 'border-amber-300 scale-105' : 'border-white/10 opacity-60 hover:opacity-100'
+                      aria-label={`View image angle ${i + 1}`}
+                      className={`w-16 h-20 rounded-xl overflow-hidden border-2 transition-all focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+                        activeImage === imgUrl ? 'border-amber-300 scale-105' : 'border-white/15 opacity-60 hover:opacity-100'
                       }`}
                     >
-                      <img src={imgUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                      <img src={imgUrl} alt="Thumbnail view" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -97,10 +98,10 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-xs font-mono text-neutral-400 uppercase tracking-widest">
                   <span>CATEGORY // {product.category}</span>
-                  <span className="text-amber-300">REF {product.id}</span>
+                  <span className="text-amber-300 font-bold">REF {product.id}</span>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-white font-heading">
+                <h2 id="quickview-title" className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-white font-heading">
                   {product.name}
                 </h2>
 
@@ -113,16 +114,16 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                 </p>
 
                 {/* Fabric & Origin Specs */}
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2 text-xs font-mono">
-                  <div className="flex items-center gap-2 text-amber-300 font-bold uppercase">
+                <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2 text-xs font-mono">
+                  <div className="flex items-center gap-2 text-amber-300 font-bold uppercase tracking-wider">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>ATELIER SPECIFICATION:</span>
                   </div>
-                  <div className="text-neutral-300">
-                    <span className="text-neutral-500">Fabric:</span> {product.fabric || 'Heavyweight Combed Cotton'}
+                  <div className="text-neutral-200">
+                    <span className="text-neutral-400">Fabric:</span> {product.fabric || 'Heavyweight Combed Cotton'}
                   </div>
-                  <div className="text-neutral-300">
-                    <span className="text-neutral-500">Origin:</span> Cut, sewn, and quality verified in Accra, Ghana
+                  <div className="text-neutral-200">
+                    <span className="text-neutral-400">Origin:</span> Cut, sewn, and quality verified in Accra, Ghana
                   </div>
                 </div>
 
@@ -138,10 +139,12 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                         key={size}
                         type="button"
                         onClick={() => setSelectedSize(size)}
-                        className={`py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                        aria-label={`Select size ${size}`}
+                        aria-pressed={selectedSize === size}
+                        className={`min-h-[40px] py-2.5 rounded-xl border text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-amber-300 ${
                           selectedSize === size
                             ? 'border-white bg-white text-black shadow-glow-sm'
-                            : 'border-white/10 text-neutral-300 hover:border-white/30 bg-white/[0.02]'
+                            : 'border-white/15 text-neutral-200 hover:border-white/35 bg-white/[0.03]'
                         }`}
                       >
                         {size}
@@ -154,8 +157,9 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
               {/* Action Buttons */}
               <div className="space-y-3 pt-4 border-t border-white/10 font-mono">
                 <button
+                  type="button"
                   onClick={handleAdd}
-                  className={`w-full py-4 rounded-full text-xs uppercase tracking-[0.18em] font-extrabold border transition-all duration-300 flex items-center justify-center gap-2 ${
+                  className={`w-full py-4 rounded-full text-xs uppercase tracking-[0.16em] font-extrabold border transition-all duration-300 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-amber-300 ${
                     justAdded
                       ? 'bg-emerald-400 text-black border-emerald-400 shadow-glow'
                       : 'bg-white hover:bg-amber-200 text-black border-white hover:border-amber-200 shadow-glow hover:scale-[1.02]'
@@ -175,10 +179,11 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleBuyNow}
-                  className="w-full py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/15 text-xs uppercase tracking-[0.15em] font-bold transition-all"
+                  className="w-full py-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/20 text-xs uppercase tracking-[0.14em] font-bold transition-all focus:outline-none focus:ring-2 focus:ring-amber-300"
                 >
-                  Instant Checkout via WhatsApp
+                  Review Bag & Proceed to WhatsApp
                 </button>
               </div>
 
