@@ -25,7 +25,7 @@ export const CategoryFilter = ({
       id="catalog-section"
       className="sticky top-16 sm:top-20 z-30 bg-[#09090c]/95 backdrop-blur-2xl border-b border-white/[0.08] py-3.5 sm:py-4 transition-all"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
         
         {/* Top Controls Bar: Search & Sort */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">

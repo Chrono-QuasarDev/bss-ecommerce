@@ -25,7 +25,7 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
 
       {/* Main Glass Navigation Bar (Sticky top-0: h-16 on mobile, h-20 on desktop) */}
       <header className="sticky top-0 z-40 w-full bg-[#09090c]/90 backdrop-blur-2xl border-b border-white/[0.08] transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+        <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
           
           {/* Brand Identity */}
           <div className="flex items-center gap-6">

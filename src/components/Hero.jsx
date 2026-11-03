@@ -11,7 +11,7 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
       {/* Ambient background glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-amber-500/10 via-white/5 to-transparent blur-[120px] pointer-events-none -z-10" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           
           {/* Left Column: Haute Couture Manifesto */}
@@ -78,8 +78,8 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
           </div>
 
           {/* Right Column: Featured Haute Editorial Card */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
+          <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-[460px] lg:max-w-[480px]">
               
               {/* Glowing backplate */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-amber-500/10 to-transparent rounded-3xl blur-2xl -z-10" />
