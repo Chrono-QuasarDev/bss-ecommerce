@@ -3,7 +3,7 @@ import { MessageSquare, Shield, Sparkles, Clock, ArrowUp, Send, Heart } from 'lu
 import { CONFIG } from '../config';
 import { useCart } from '../context/CartContext';
 
-export const Footer = ({ onOpenSheetConfig }) => {
+export const Footer = () => {
   const { openOrderHistory } = useCart();
 
   const scrollToTop = () => {
@@ -25,7 +25,7 @@ export const Footer = ({ onOpenSheetConfig }) => {
               CONCIERGE ON WHATSAPP
             </h4>
             <p className="text-xs text-neutral-400 font-sans leading-relaxed">
-              Order directly to our atelier's private WhatsApp concierge line. Zero user accounts, zero password fatigue, instant order confirmation.
+              Order directly to our atelier's private WhatsApp concierge line. Zero user accounts, zero password fatigue, direct artisan fulfillment.
             </p>
           </div>
 
@@ -34,10 +34,10 @@ export const Footer = ({ onOpenSheetConfig }) => {
               <Shield className="w-5 h-5" />
             </div>
             <h4 className="text-xs font-bold uppercase tracking-widest text-white">
-              SERVERLESS ARCHITECTURE
+              CURATED ATELIER ARCHIVE
             </h4>
             <p className="text-xs text-neutral-400 font-sans leading-relaxed">
-              Real-time dynamic catalog powered by published Google Sheets. Free Google Apps Script webhook logging. Zero database bills.
+              Real-time capsule catalog maintained directly by the atelier design studio. Hand-finished garments crafted in limited batches.
             </p>
           </div>
 
@@ -49,7 +49,7 @@ export const Footer = ({ onOpenSheetConfig }) => {
               GHANAIAN CEDIS (GH₵)
             </h4>
             <p className="text-xs text-neutral-400 font-sans leading-relaxed">
-              Formatted strictly with Ghanaian monetary standards (`en-GH / GHS`). Seamless settlement via MTN MoMo, Telecel Cash, or Bank Transfer.
+              Formatted strictly with Ghanaian monetary standards (`en-GH / GHS`). Direct arrangement via Mobile Money or Bank Wire.
             </p>
           </div>
 
@@ -58,7 +58,7 @@ export const Footer = ({ onOpenSheetConfig }) => {
 
       {/* Main Footer Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14">
           
           {/* Brand Column */}
           <div className="space-y-4">
@@ -67,7 +67,7 @@ export const Footer = ({ onOpenSheetConfig }) => {
             </div>
             <p className="text-xs text-neutral-400 font-sans leading-relaxed">
               Haute-couture minimalist studio established in {CONFIG.STORE_CITY}, {CONFIG.STORE_COUNTRY}.
-              Engineered with extreme aesthetic rigor and zero-maintenance serverless infrastructure.
+              Engineered with extreme aesthetic rigor and uncompromising craftsmanship.
             </p>
             <div className="text-[10px] text-neutral-500 font-mono">
               COORDINATES: 5°33'21"N 0°11'06"W (OSU, ACCRA)
@@ -123,27 +123,7 @@ export const Footer = ({ onOpenSheetConfig }) => {
                 </a>
               </li>
               <li>Accra Studio: Mon - Sat (09:00 - 18:00 GMT)</li>
-              <li>Same-Day Delivery: Greater Accra</li>
               <li>Air Express: Kumasi, Takoradi, Tamale</li>
-            </ul>
-          </div>
-
-          {/* CMS Sync Control */}
-          <div className="space-y-3 text-xs">
-            <div className="font-bold uppercase tracking-widest text-white font-heading">
-              MERCHANT CMS
-            </div>
-            <ul className="space-y-2.5 text-neutral-400">
-              <li>
-                <button
-                  onClick={onOpenSheetConfig}
-                  className="text-neutral-300 hover:text-white underline transition-colors"
-                >
-                  Connect Custom Google Sheet
-                </button>
-              </li>
-              <li>Free Database: Webhook POST (`no-cors`)</li>
-              <li>Static Host Ready: Vercel / Netlify</li>
             </ul>
           </div>
 
