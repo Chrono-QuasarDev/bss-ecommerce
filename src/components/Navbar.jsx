@@ -1,7 +1,13 @@
-import React from 'react';
-import { ShoppingBag, Clock, Sparkles, Search, Compass, ShieldCheck } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { CONFIG } from '../config';
+import {
+  Clock,
+  Compass,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+} from "lucide-react";
+import { CONFIG } from "../config";
+import { useCart } from "../context/CartContext";
 
 export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
   const { totalItems, openCart, orderHistory, openOrderHistory } = useCart();
@@ -15,41 +21,44 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span className="text-white font-medium">ACCRA ATELIER DIRECT</span>
+          <span className="text-white font-medium">B.S.S STREETWEAR</span>
         </div>
         <span className="hidden sm:inline text-neutral-600">✦</span>
-        <span className="hidden sm:inline text-neutral-300">FREE SAME-DAY DISPATCH WITHIN GREATER ACCRA</span>
+        <span className="hidden sm:inline text-neutral-300">
+          LOCAL SOUL, GLOBAL VISION
+        </span>
         <span className="hidden md:inline text-neutral-600">✦</span>
-        <span className="hidden md:inline text-amber-300">WHATSAPP DIRECT CONCIERGE</span>
+        <span className="hidden md:inline text-amber-300">
+          BOFOO STYLE SPECTRUM
+        </span>
       </div>
 
       {/* Main Glass Navigation Bar (Sticky top-0: h-16 on mobile, h-20 on desktop) */}
       <header className="sticky top-0 z-40 w-full bg-[#09090c]/90 backdrop-blur-2xl border-b border-white/[0.08] transition-all">
         <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
-          
           {/* Brand Identity */}
           <div className="flex items-center gap-6">
             <a
               href="#"
               className="group flex flex-col items-start focus:outline-none focus:ring-2 focus:ring-amber-300/70 rounded-lg p-1 -m-1"
-              aria-label={`${CONFIG.STORE_NAME} - Home`}
+              aria-label={`${CONFIG.STORE_NAME}, ${CONFIG.STORE_SUBTITLE} - Home`}
             >
               <div className="flex items-center gap-2">
                 <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-[0.24em] uppercase text-white font-heading group-hover:text-amber-200 transition-colors duration-300">
                   {CONFIG.STORE_NAME}
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 border border-white/20 text-neutral-200 bg-white/[0.06] rounded-sm hidden sm:inline">
-                  {CONFIG.STORE_CITY.toUpperCase()}
-                </span>
               </div>
-              <span className="text-[10px] font-mono tracking-[0.28em] text-neutral-400 uppercase -mt-0.5">
-                HAUTE MINIMALISM • {CONFIG.CURRENCY_CODE}
+              <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.12em] text-neutral-400 uppercase -mt-0.5">
+                {CONFIG.STORE_SUBTITLE}
               </span>
             </a>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 font-mono text-xs tracking-wider" aria-label="Main Navigation">
+          <nav
+            className="hidden lg:flex items-center gap-1 font-mono text-xs tracking-wider"
+            aria-label="Main Navigation"
+          >
             <a
               href="#catalog-section"
               className="px-4 py-2 text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 hover:bg-white/[0.06] rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300/70"

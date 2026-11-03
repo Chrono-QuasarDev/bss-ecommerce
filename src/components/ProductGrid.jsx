@@ -1,6 +1,12 @@
-import React from 'react';
-import { ProductCard } from './ProductCard';
-import { AlertCircle, RefreshCw, Sparkles, FilterX, Loader2, RotateCcw } from 'lucide-react';
+import {
+  AlertCircle,
+  FilterX,
+  Loader2,
+  RefreshCw,
+  RotateCcw,
+  Sparkles,
+} from "lucide-react";
+import { ProductCard } from "./ProductCard";
 
 export const ProductGrid = ({
   products,
@@ -21,7 +27,7 @@ export const ProductGrid = ({
         <div className="glass-panel rounded-2xl p-6 border border-white/15 bg-white/[0.04] mb-8 text-center flex items-center justify-center gap-3">
           <Loader2 className="w-5 h-5 animate-spin text-amber-300" />
           <span className="font-mono text-xs sm:text-sm font-semibold tracking-wider text-white">
-            SYNCING COLLECTION WITH ATELIER GOOGLE SHEETS...
+            UPDATING THE COLLECTION...
           </span>
         </div>
 
@@ -53,7 +59,6 @@ export const ProductGrid = ({
 
   return (
     <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-14 sm:pt-8 sm:pb-20">
-      
       {/* Non-blocking sync error banner if Google Sheets sync failed but cached catalog is shown */}
       {error && (
         <div className="glass-panel rounded-2xl p-5 border border-amber-500/30 bg-amber-500/[0.08] mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -64,7 +69,8 @@ export const ProductGrid = ({
                 GOOGLE SHEETS CMS SYNC NOTICE
               </div>
               <div className="text-xs text-neutral-300 font-sans leading-relaxed">
-                Could not connect to live sheet. Displaying the atelier's cached local catalog.
+                Could not connect to the live sheet. Showing the saved
+                collection.
               </div>
             </div>
           </div>
@@ -117,11 +123,17 @@ export const ProductGrid = ({
             <div className="flex flex-wrap items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               <span className="uppercase tracking-[0.16em] text-neutral-300">
-                SHOWING: <span className="text-white font-bold">{activeCategory}</span>
+                SHOWING:{" "}
+                <span className="text-white font-bold">{activeCategory}</span>
                 {searchQuery && (
-                  <span className="text-amber-300"> (MATCHING "{searchQuery}")</span>
-                )}
-                {' '}— <span className="text-white font-bold">{products.length}</span> {products.length === 1 ? 'PIECE' : 'PIECES'}
+                  <span className="text-amber-300">
+                    {" "}
+                    (MATCHING "{searchQuery}")
+                  </span>
+                )}{" "}
+                —{" "}
+                <span className="text-white font-bold">{products.length}</span>{" "}
+                {products.length === 1 ? "PIECE" : "PIECES"}
               </span>
             </div>
 
@@ -136,7 +148,7 @@ export const ProductGrid = ({
                 </button>
               )}
               <span className="hidden md:inline uppercase tracking-widest text-[11px] text-neutral-400">
-                CEDIS DIRECT VIA WHATSAPP
+                EXPLORE THE COLLECTION
               </span>
             </div>
           </div>
@@ -152,7 +164,6 @@ export const ProductGrid = ({
           </div>
         </>
       )}
-
     </div>
   );
 };

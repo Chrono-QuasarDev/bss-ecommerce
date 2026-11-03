@@ -1,5 +1,5 @@
-import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import React from "react";
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('[Atelier ErrorBoundary caught error]:', error, errorInfo);
+    console.error("[Atelier ErrorBoundary caught error]:", error, errorInfo);
   }
 
   handleReload = () => {
@@ -37,7 +37,8 @@ export class ErrorBoundary extends React.Component {
                 Storefront Notice
               </h1>
               <p className="text-xs text-neutral-400 font-sans leading-relaxed">
-                A temporary rendering hiccup occurred. The atelier system remains secure.
+                The storefront could not display this page. Please try again or
+                reload.
               </p>
             </div>
 
