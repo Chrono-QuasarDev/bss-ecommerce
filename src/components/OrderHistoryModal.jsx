@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, Copy, Check, ExternalLink, Trash2, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { X, Clock, Copy, Check, ExternalLink, Trash2, ShieldCheck, ShoppingBag, Receipt } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatGHS, formatDateTime } from '../utils/formatters';
 import { CONFIG } from '../config';
@@ -24,65 +24,76 @@ export const OrderHistoryModal = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
+      {/* Blurred Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
         onClick={closeOrderHistory}
       />
 
       <div className="min-h-full flex items-center justify-center p-4">
-        <div className="relative w-full max-w-2xl bg-white border border-black shadow-2xl p-6 sm:p-8 font-mono">
+        <div className="relative w-full max-w-2xl glass-panel rounded-3xl border border-white/15 p-6 sm:p-8 font-mono text-white shadow-2xl my-8">
+          
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-neutral-200">
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-black" />
-              <h2 className="text-base sm:text-lg font-bold uppercase tracking-widest text-black">
-                MY ORDERS ({orderHistory.length})
-              </h2>
+          <div className="flex items-center justify-between pb-5 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-300">
+                <Receipt className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white font-heading">
+                  LOCAL ORDER HISTORY
+                </h2>
+                <div className="text-[10px] text-neutral-400">
+                  {orderHistory.length} CONCIERGE TRANSACTIONS RECORDED
+                </div>
+              </div>
             </div>
+
             <button
               onClick={closeOrderHistory}
-              className="p-1 border border-neutral-200 hover:border-black text-neutral-600 hover:text-black transition-colors"
-              aria-label="Close Order History"
+              className="p-2 rounded-full border border-white/10 hover:border-white/30 text-neutral-400 hover:text-white transition-colors"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Orders Content */}
-          <div className="py-6 max-h-[60vh] overflow-y-auto space-y-6">
+          {/* Orders Scrollable Content */}
+          <div className="py-6 max-h-[60vh] overflow-y-auto space-y-4">
             {orderHistory.length === 0 ? (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-12 h-12 mx-auto border border-neutral-300 flex items-center justify-center text-neutral-400">
-                  <ShoppingBag className="w-6 h-6" />
+              <div className="text-center py-14 space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center text-neutral-500">
+                  <ShoppingBag className="w-7 h-7" />
                 </div>
-                <p className="text-sm uppercase tracking-widest font-bold text-black">
-                  NO ORDERS RECORDED
-                </p>
-                <p className="text-xs text-neutral-500 font-sans max-w-xs mx-auto">
-                  Orders placed on this device are automatically saved to your browser's localStorage for quick tracking.
-                </p>
+                <div className="space-y-1">
+                  <p className="font-heading text-base uppercase tracking-wider font-bold text-white">
+                    NO COMPLETED ORDERS RECORDED
+                  </p>
+                  <p className="text-xs text-neutral-400 font-sans max-w-xs mx-auto">
+                    When you confirm orders, an immutable copy is saved locally to your device for instant tracking.
+                  </p>
+                </div>
               </div>
             ) : (
               orderHistory.map((order) => (
                 <div
                   key={order.id}
-                  className="border border-neutral-200 p-5 space-y-4 bg-neutral-50"
+                  className="rounded-2xl border border-white/10 p-5 space-y-4 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
                 >
-                  {/* Top Bar of Order Card */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-neutral-200">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-black">
-                        ORDER: {order.id}
+                  {/* Top Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-white">
+                        ID: {order.id}
                       </span>
                       <button
                         onClick={() => handleCopy(order.id)}
-                        className="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-neutral-300 hover:border-black bg-white flex items-center gap-1 transition-colors"
-                        title="Copy Order ID"
+                        className="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/15 hover:border-white bg-white/5 hover:bg-white hover:text-black flex items-center gap-1 transition-all"
+                        title="Copy ID"
                       >
                         {copiedId === order.id ? (
                           <>
-                            <Check className="w-3 h-3 text-black" />
+                            <Check className="w-3 h-3 text-emerald-400" />
                             <span>COPIED</span>
                           </>
                         ) : (
@@ -94,19 +105,19 @@ export const OrderHistoryModal = () => {
                       </button>
                     </div>
 
-                    <div className="text-[11px] text-neutral-500">
+                    <div className="text-[11px] text-neutral-400">
                       {formatDateTime(order.createdAt)}
                     </div>
                   </div>
 
                   {/* Items List */}
-                  <div className="space-y-1.5 text-xs">
+                  <div className="space-y-2 text-xs">
                     {order.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-neutral-700">
+                      <div key={idx} className="flex justify-between items-center text-neutral-300">
                         <span className="line-clamp-1">
-                          {item.quantity}x {item.name}
+                          {item.quantity}x {item.name} {item.selectedSize ? `(${item.selectedSize})` : ''}
                         </span>
-                        <span className="font-semibold text-black flex-shrink-0">
+                        <span className="font-bold text-white flex-shrink-0">
                           {formatGHS(item.price * item.quantity)}
                         </span>
                       </div>
@@ -114,15 +125,15 @@ export const OrderHistoryModal = () => {
                   </div>
 
                   {/* Order Footer */}
-                  <div className="pt-3 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="text-neutral-500 uppercase tracking-widest text-[11px]">
+                      <span className="text-neutral-400 uppercase tracking-widest text-[11px]">
                         TOTAL:
                       </span>
-                      <span className="font-bold text-base text-black">
+                      <span className="font-bold text-base text-gold-metallic">
                         {formatGHS(order.total)}
                       </span>
-                      <span className="px-2 py-0.5 border border-neutral-300 bg-white text-[10px] text-neutral-600 uppercase tracking-wider flex items-center gap-1">
+                      <span className="px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[10px] text-emerald-300 uppercase tracking-wider flex items-center gap-1 font-bold">
                         <ShieldCheck className="w-3 h-3" />
                         WHATSAPP VERIFIED
                       </span>
@@ -130,7 +141,7 @@ export const OrderHistoryModal = () => {
 
                     <button
                       onClick={() => handleInquire(order.id)}
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-black text-white hover:bg-white hover:text-black border border-black uppercase text-[11px] tracking-wider transition-colors"
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white text-black hover:bg-amber-200 rounded-full font-bold uppercase text-[11px] tracking-wider transition-all shadow-glow-sm hover:scale-105"
                     >
                       <span>Inquire Status</span>
                       <ExternalLink className="w-3 h-3" />
@@ -141,12 +152,12 @@ export const OrderHistoryModal = () => {
             )}
           </div>
 
-          {/* Modal Footer */}
-          <div className="pt-4 border-t border-neutral-200 flex items-center justify-between text-xs">
+          {/* Footer */}
+          <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
             {orderHistory.length > 0 && (
               <button
                 onClick={clearOrderHistory}
-                className="flex items-center gap-1.5 text-neutral-400 hover:text-black uppercase text-[11px] tracking-wider transition-colors"
+                className="flex items-center gap-1.5 text-neutral-500 hover:text-red-400 uppercase text-[11px] tracking-wider transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear Local History</span>
@@ -155,7 +166,7 @@ export const OrderHistoryModal = () => {
 
             <button
               onClick={closeOrderHistory}
-              className="ml-auto px-5 py-2 bg-black text-white hover:bg-white hover:text-black border border-black uppercase text-xs tracking-widest transition-colors"
+              className="ml-auto px-6 py-2.5 rounded-full bg-white text-black hover:bg-amber-200 uppercase text-xs tracking-widest font-bold transition-all shadow-glow-sm"
             >
               Close
             </button>

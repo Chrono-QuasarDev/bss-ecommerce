@@ -7,18 +7,17 @@ import { PremiumMockups } from './components/PremiumMockups';
 import { CartDrawer } from './components/CartDrawer';
 import { OrderHistoryModal } from './components/OrderHistoryModal';
 import { SheetConfigModal } from './components/SheetConfigModal';
+import { QuickViewModal } from './components/QuickViewModal';
 import { Footer } from './components/Footer';
 import { fetchProductsFromGoogleSheet } from './utils/csvParser';
 import { CONFIG } from './config';
 
 export function App() {
-  // Products and Google Sheets CMS state
   const [products, setProducts] = useState(CONFIG.FALLBACK_PRODUCTS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sheetStatus, setSheetStatus] = useState('cached'); // 'synced' | 'cached' | 'error'
+  const [sheetStatus, setSheetStatus] = useState('cached');
 
-  // Custom Sheet URL state (persisted so client can test different sheets)
   const [customSheetUrl, setCustomSheetUrl] = useState(() => {
     try {
       return localStorage.getItem(CONFIG.STORAGE_KEYS.CUSTOM_SHEET_URL) || CONFIG.SHEET_CSV_URL;
@@ -28,14 +27,13 @@ export function App() {
   });
 
   const [isSheetConfigOpen, setIsSheetConfigOpen] = useState(false);
-
-  // Client-Side Category Filtering
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('featured');
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   /**
    * Google Sheets CMS Fetcher
-   * Fetches published Google Sheet CSV, parses CSV into product objects,
-   * with graceful fallback to built-in atelier catalog if offline.
    */
   const loadProducts = async (targetUrl) => {
     setLoading(true);
@@ -44,9 +42,7 @@ export function App() {
     const sheetUrl = targetUrl || customSheetUrl;
 
     try {
-      // If the URL is the placeholder, we use fallback immediately with simulated fast sync
       if (!sheetUrl || sheetUrl.includes('placeholder')) {
-        console.info('[Atelier CMS] Using built-in curated catalog (placeholder sheet configured).');
         setProducts(CONFIG.FALLBACK_PRODUCTS);
         setSheetStatus('cached');
         setLoading(false);
@@ -62,9 +58,8 @@ export function App() {
         throw new Error('Parsed product list was empty.');
       }
     } catch (err) {
-      console.warn('[Atelier CMS] Google Sheets fetch notice:', err.message);
+      console.warn('[Atelier CMS] Google Sheets Notice:', err.message);
       setError(err.message);
-      // Fallback to built-in catalog so application remains completely usable
       setProducts(CONFIG.FALLBACK_PRODUCTS);
       setSheetStatus('cached');
     } finally {
@@ -90,7 +85,7 @@ export function App() {
     loadProducts(newUrl);
   };
 
-  // Derive unique categories from currently loaded products
+  // Extract unique categories
   const categories = useMemo(() => {
     const set = new Set();
     products.forEach((p) => {
@@ -99,7 +94,7 @@ export function App() {
     return ['All', ...Array.from(set)];
   }, [products]);
 
-  // Compute category item counts for the filter pills
+  // Compute category counts
   const categoryCounts = useMemo(() => {
     const counts = { All: products.length };
     products.forEach((p) => {
@@ -109,29 +104,67 @@ export function App() {
     return counts;
   }, [products]);
 
-  // Client-Side Filtered Products (Instantaneous in-memory filtering)
+  // Client-Side Search, Category Filtering & Sorting
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'All') return products;
-    return products.filter((p) => (p.category || '').trim() === selectedCategory);
-  }, [products, selectedCategory]);
+    let result = [...products];
+
+    // 1. Category Filter
+    if (selectedCategory !== 'All') {
+      result = result.filter((p) => (p.category || '').trim() === selectedCategory);
+    }
+
+    // 2. Real-time Search Query Filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          (p.category && p.category.toLowerCase().includes(query)) ||
+          (p.description && p.description.toLowerCase().includes(query)) ||
+          (p.fabric && p.fabric.toLowerCase().includes(query))
+      );
+    }
+
+    // 3. Sorting
+    if (sortBy === 'price-asc') {
+      result.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-desc') {
+      result.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'name-asc') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return result;
+  }, [products, selectedCategory, searchQuery, sortBy]);
 
   return (
-    <div className="min-h-screen bg-white text-black flex flex-col font-sans selection:bg-black selection:text-white">
-      {/* Top Navigation */}
-      <Navbar onOpenSheetConfig={() => setIsSheetConfigOpen(true)} />
+    <div className="min-h-screen bg-[#060607] text-[#f2f2f4] flex flex-col font-sans selection:bg-amber-300 selection:text-black">
+      {/* Top Navbar */}
+      <Navbar
+        onOpenSheetConfig={() => setIsSheetConfigOpen(true)}
+        onOpenSearch={() => {
+          const el = document.getElementById('catalog-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
+      />
 
-      {/* Hero Section */}
+      {/* Cinematic Hero */}
       <Hero
         productCount={products.length}
         sheetStatus={sheetStatus}
+        onFeaturedClick={() => setQuickViewProduct(CONFIG.FALLBACK_PRODUCTS[1])}
       />
 
-      {/* Sticky Horizontal Category Filter */}
+      {/* Sticky Category Filter & Search Bar */}
       <CategoryFilter
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         categoryCounts={categoryCounts}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
       />
 
       {/* Main Product Grid */}
@@ -142,19 +175,27 @@ export function App() {
           error={error}
           onRetry={() => loadProducts(customSheetUrl)}
           activeCategory={selectedCategory}
+          onQuickView={(p) => setQuickViewProduct(p)}
         />
 
-        {/* The VIP Pass Premium Mock-up Component */}
+        {/* The VIP Pass Cyber-Vault Component */}
         <PremiumMockups />
       </main>
 
       {/* Slide-out Cart Drawer with WhatsApp Handoff Sequence */}
       <CartDrawer />
 
-      {/* Order History Modal (Saved in localStorage) */}
+      {/* Local Order History Modal */}
       <OrderHistoryModal />
 
-      {/* Google Sheets CMS Setup & Tester Modal */}
+      {/* Quick View Modal */}
+      <QuickViewModal
+        product={quickViewProduct}
+        isOpen={Boolean(quickViewProduct)}
+        onClose={() => setQuickViewProduct(null)}
+      />
+
+      {/* Google Sheets CMS Config Modal */}
       <SheetConfigModal
         isOpen={isSheetConfigOpen}
         onClose={() => setIsSheetConfigOpen(false)}
@@ -164,7 +205,7 @@ export function App() {
         isLiveSynced={sheetStatus === 'synced'}
       />
 
-      {/* Atelier Footer */}
+      {/* Footer */}
       <Footer onOpenSheetConfig={() => setIsSheetConfigOpen(true)} />
     </div>
   );

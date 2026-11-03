@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, ArrowRight, Check, Copy, ExternalLink, Loader2, ShieldCheck } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ArrowRight, Check, Copy, ExternalLink, Loader2, ShieldCheck, Sparkles, Send } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { useCart } from '../context/CartContext';
 import { formatGHS, generateOrderId } from '../utils/formatters';
 import { formatOrderString, logOrderToWebhook, buildWhatsAppUrl } from '../utils/checkout';
@@ -18,39 +19,35 @@ export const CartDrawer = () => {
     saveOrder,
   } = useCart();
 
-  // Checkout flow state: 'idle' | 'securing' | 'ready'
-  const [checkoutState, setCheckoutState] = useState('idle');
+  const [checkoutState, setCheckoutState] = useState('idle'); // 'idle' | 'securing' | 'ready'
   const [completedOrderId, setCompletedOrderId] = useState('');
   const [formattedMessage, setFormattedMessage] = useState('');
   const [isCopied, setIsCopied] = useState(false);
 
   if (!isCartOpen) return null;
 
-  /**
-   * The Checkout Handoff Sequence
-   */
   const handleConfirmOrder = async () => {
     if (cart.length === 0 || checkoutState !== 'idle') return;
 
-    // Step 1: Loading State & Generate short alphanumeric Order ID
+    // 1. Loading State & Alphanumeric Order ID
     setCheckoutState('securing');
     const orderId = generateOrderId();
     const currentCartSnapshot = [...cart];
     const totalSnapshot = subtotal;
 
-    // Step 2: Format the exact WhatsApp Order String
-    // Order Request:\nOrder ID: [ID]\n1x Item A (GH₵ 200.00)\n2x Item B (GH₵ 100.00)\nTotal: GH₵ 400.00
+    // 2. Format Exact WhatsApp Order String
     const orderText = formatOrderString(orderId, currentCartSnapshot, totalSnapshot);
     setCompletedOrderId(orderId);
     setFormattedMessage(orderText);
 
-    // Step 3: Log the Order (Free Database Webhook) with mode: 'no-cors'
+    // 3. Log to Free Database Webhook (mode: 'no-cors')
     const payload = {
       orderId,
       orderText,
       items: currentCartSnapshot.map((item) => ({
         id: item.id,
         name: item.name,
+        size: item.selectedSize || 'Standard',
         quantity: item.quantity,
         price: item.price,
         lineTotal: item.price * item.quantity,
@@ -63,10 +60,10 @@ export const CartDrawer = () => {
     try {
       await logOrderToWebhook(CONFIG.WEBHOOK_URL, payload);
     } catch (err) {
-      console.warn('Webhook logging error caught gracefully:', err);
+      console.warn('Webhook logging notice:', err);
     }
 
-    // Record order into local Order History
+    // Record order in local storage history
     saveOrder({
       id: orderId,
       items: currentCartSnapshot,
@@ -75,19 +72,27 @@ export const CartDrawer = () => {
       rawText: orderText,
     });
 
-    // Step 4: Handoff UI & Redirect
-    setCheckoutState('ready');
+    // Golden celebration burst
+    try {
+      confetti({
+        particleCount: 90,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#ffffff', '#d4af37', '#e2e8f0'],
+      });
+    } catch {}
 
-    // Build the final WhatsApp URL
+    // 4. Handoff UI & Automated WhatsApp Redirection
+    setCheckoutState('ready');
     const targetUrl = buildWhatsAppUrl(CONFIG.WHATSAPP_PHONE, orderText);
 
-    // Clear cart from state & localStorage
+    // 5. Clear Cart
     clearCart();
 
-    // Trigger redirection smoothly after a brief pause so user can perceive the Order ID
+    // Trigger redirection smoothly after a brief pause
     setTimeout(() => {
       window.location.href = targetUrl;
-    }, 1200);
+    }, 1400);
   };
 
   const handleCopyOrderId = () => {
@@ -105,28 +110,30 @@ export const CartDrawer = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Backdrop */}
+      {/* Blurred Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/75 backdrop-blur-md transition-opacity duration-300"
         onClick={checkoutState === 'securing' ? undefined : closeCart}
       />
 
-      {/* Drawer */}
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-6">
-        <aside className="w-screen max-w-md bg-white border-l border-neutral-200 flex flex-col shadow-2xl">
-          {/* Drawer Header */}
-          <div className="p-5 border-b border-neutral-200 flex items-center justify-between font-mono">
-            <div className="flex items-center gap-2">
-              <span className="font-bold uppercase tracking-widest text-sm text-black">
+      <div className="absolute inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
+        <aside className="w-screen max-w-md bg-[#0c0c10] border-l border-white/10 flex flex-col shadow-2xl relative text-white">
+          
+          {/* Header */}
+          <div className="p-6 border-b border-white/10 flex items-center justify-between font-mono bg-white/[0.02]">
+            <div className="flex items-center gap-2.5">
+              <span className="font-heading text-lg font-bold uppercase tracking-wider text-white">
                 YOUR SELECTION
               </span>
-              <span className="text-xs text-neutral-500">[{totalItems}]</span>
+              <span className="px-2 py-0.5 rounded-full bg-white/10 text-neutral-300 text-xs font-mono font-bold">
+                {totalItems}
+              </span>
             </div>
 
             <button
               onClick={closeCart}
               disabled={checkoutState === 'securing'}
-              className="p-1.5 border border-neutral-200 hover:border-black text-neutral-600 hover:text-black transition-colors"
+              className="p-2 rounded-full border border-white/10 hover:border-white/30 text-neutral-400 hover:text-white transition-colors"
               aria-label="Close Bag"
             >
               <X className="w-4 h-4" />
@@ -134,36 +141,41 @@ export const CartDrawer = () => {
           </div>
 
           {/* Drawer Content */}
-          <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            
             {checkoutState === 'ready' ? (
-              /* Step 4 Handoff UI State */
-              <div className="py-8 text-center space-y-6 font-mono">
-                <div className="w-14 h-14 mx-auto border-2 border-black flex items-center justify-center bg-black text-white">
+              /* Step 4 Handoff UI */
+              <div className="py-8 text-center space-y-6">
+                <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-amber-200 text-black flex items-center justify-center shadow-glow-gold">
                   <ShieldCheck className="w-8 h-8" />
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-lg font-bold uppercase tracking-wide text-black">
-                    ORDER SECURED
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-[11px] uppercase tracking-wider font-bold">
+                    <span>ORDER SECURED // DISPATCHING</span>
+                  </div>
+                  <h3 className="font-heading text-2xl font-bold uppercase text-white">
+                    CONNECTING CONCIERGE
                   </h3>
-                  <p className="text-xs text-neutral-600 font-sans leading-relaxed">
-                    Connecting to the WhatsApp concierge. If the WhatsApp client does not open automatically,
-                    use the button below.
+                  <p className="text-xs text-neutral-400 font-sans leading-relaxed max-w-xs mx-auto">
+                    Your order snapshot is encrypted and prefilled. Launching your private WhatsApp chat session...
                   </p>
                 </div>
 
-                {/* Order ID display box with Copy button */}
-                <div className="p-4 border border-black bg-neutral-50 text-left space-y-3">
-                  <div className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">
-                    OFFICIAL ORDER ID:
+                {/* Glowing Order ID display card */}
+                <div className="p-5 rounded-2xl border border-white/15 bg-white/[0.03] backdrop-blur-xl text-left space-y-3 shadow-xl">
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-neutral-400">
+                    <span>OFFICIAL ORDER TRACKING ID</span>
+                    <span className="text-amber-300">GH₵ CEDIS</span>
                   </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xl font-bold tracking-wider text-black">
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <span className="font-mono text-xl sm:text-2xl font-black tracking-widest text-white">
                       {completedOrderId}
                     </span>
                     <button
                       onClick={handleCopyOrderId}
-                      className="flex items-center gap-1.5 px-3 py-1.5 border border-black bg-white hover:bg-black hover:text-white text-xs uppercase tracking-wider transition-colors"
+                      className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-amber-200 text-black text-xs font-mono uppercase font-bold tracking-wider transition-all shadow-glow-sm"
                     >
                       {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{isCopied ? 'COPIED' : 'COPY'}</span>
@@ -171,71 +183,78 @@ export const CartDrawer = () => {
                   </div>
                 </div>
 
-                {/* Direct WhatsApp button fallback */}
-                <button
-                  onClick={handleManualWhatsAppRedirect}
-                  className="w-full py-3 bg-black text-white hover:bg-white hover:text-black border border-black text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all"
-                >
-                  <span>Open WhatsApp Directly</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </button>
+                {/* Fallback Direct Trigger */}
+                <div className="space-y-3 pt-2">
+                  <button
+                    onClick={handleManualWhatsAppRedirect}
+                    className="w-full py-4 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-300 text-black hover:from-white hover:to-neutral-100 font-mono text-xs uppercase tracking-[0.16em] font-extrabold flex items-center justify-center gap-2 transition-all shadow-glow hover:scale-105"
+                  >
+                    <span>Launch WhatsApp Directly</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
 
-                <button
-                  onClick={() => {
-                    setCheckoutState('idle');
-                    closeCart();
-                  }}
-                  className="text-xs text-neutral-500 hover:text-black underline uppercase tracking-wider"
-                >
-                  Back to Store
-                </button>
+                  <button
+                    onClick={() => {
+                      setCheckoutState('idle');
+                      closeCart();
+                    }}
+                    className="text-xs font-mono text-neutral-500 hover:text-white underline uppercase tracking-wider transition-colors"
+                  >
+                    Return to Atelier Store
+                  </button>
+                </div>
               </div>
             ) : cart.length === 0 ? (
               /* Empty Cart State */
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12 font-mono">
-                <div className="w-16 h-16 border border-neutral-300 flex items-center justify-center text-neutral-400">
-                  <X className="w-6 h-6" />
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-16">
+                <div className="w-20 h-20 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center text-neutral-500">
+                  <X className="w-8 h-8" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm uppercase tracking-widest font-bold text-black">
-                    BAG IS EMPTY
+                  <p className="font-heading text-lg uppercase tracking-wider font-bold text-white">
+                    YOUR BAG IS EMPTY
                   </p>
-                  <p className="text-xs text-neutral-500 font-sans">
-                    Browse the ready-to-wear pieces and add items to begin.
+                  <p className="text-xs text-neutral-400 font-sans max-w-xs">
+                    Curate your selection from our ready-to-wear masterworks.
                   </p>
                 </div>
                 <button
                   onClick={closeCart}
-                  className="px-6 py-2.5 bg-black text-white hover:bg-white hover:text-black border border-black text-xs uppercase tracking-widest transition-colors"
+                  className="px-7 py-3 rounded-full bg-white text-black hover:bg-amber-200 font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-glow hover:scale-105"
                 >
                   Explore Collection
                 </button>
               </div>
             ) : (
               /* Cart Items List */
-              <div className="space-y-4 divide-y divide-neutral-100">
+              <div className="space-y-4 divide-y divide-white/[0.06]">
                 {cart.map((item) => (
-                  <div key={item.id} className="pt-4 first:pt-0 flex gap-4">
+                  <div key={`${item.id}-${item.selectedSize}`} className="pt-4 first:pt-0 flex gap-4">
                     {/* Thumbnail */}
-                    <div className="w-20 h-24 bg-neutral-100 flex-shrink-0 border border-neutral-200 overflow-hidden">
+                    <div className="w-20 h-24 rounded-xl bg-neutral-900 flex-shrink-0 border border-white/10 overflow-hidden relative">
                       <img
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
+                      {item.selectedSize && (
+                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-sm bg-black/80 font-mono text-[9px] text-white font-bold">
+                          {item.selectedSize}
+                        </div>
+                      )}
                     </div>
 
                     {/* Details */}
                     <div className="flex-1 flex flex-col justify-between font-mono">
                       <div className="space-y-1">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="text-xs uppercase font-medium text-black line-clamp-1">
+                          <h4 className="text-xs uppercase font-bold text-white font-heading line-clamp-1">
                             {item.name}
                           </h4>
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="text-neutral-400 hover:text-black p-0.5 transition-colors"
-                            title="Remove Item"
+                            className="text-neutral-500 hover:text-white p-1 transition-colors"
+                            title="Remove"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -247,29 +266,27 @@ export const CartDrawer = () => {
 
                       {/* Quantity & Line Total */}
                       <div className="flex items-center justify-between pt-2">
-                        {/* Quantity Controls */}
-                        <div className="flex items-center border border-neutral-300">
+                        <div className="flex items-center rounded-full border border-white/15 bg-white/[0.04]">
                           <button
                             onClick={() => updateQuantity(item.id, -1)}
-                            className="p-1 text-neutral-600 hover:text-black hover:bg-neutral-100 transition-colors"
+                            className="p-1.5 text-neutral-400 hover:text-white transition-colors"
                             aria-label="Decrease quantity"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="px-3 text-xs font-bold text-black min-w-[28px] text-center">
+                          <span className="px-2.5 text-xs font-bold text-white min-w-[24px] text-center">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(item.id, 1)}
-                            className="p-1 text-neutral-600 hover:text-black hover:bg-neutral-100 transition-colors"
+                            className="p-1.5 text-neutral-400 hover:text-white transition-colors"
                             aria-label="Increase quantity"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
                         </div>
 
-                        {/* Line Total */}
-                        <div className="text-xs font-semibold text-black">
+                        <div className="text-xs font-bold text-white">
                           {formatGHS(item.price * item.quantity)}
                         </div>
                       </div>
@@ -280,32 +297,32 @@ export const CartDrawer = () => {
             )}
           </div>
 
-          {/* Drawer Footer & Checkout Action */}
+          {/* Drawer Footer & Checkout Trigger */}
           {cart.length > 0 && checkoutState !== 'ready' && (
-            <div className="p-5 border-t border-neutral-200 bg-neutral-50 font-mono space-y-4">
-              <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between text-neutral-500">
+            <div className="p-6 border-t border-white/10 bg-white/[0.02] font-mono space-y-4">
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between text-neutral-400">
                   <span className="uppercase tracking-widest">Subtotal</span>
-                  <span className="font-semibold text-black">{formatGHS(subtotal)}</span>
+                  <span className="font-bold text-white">{formatGHS(subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-neutral-500 text-[11px]">
-                  <span className="uppercase tracking-wider">Concierge Handoff</span>
-                  <span className="text-black font-semibold">FREE (WhatsApp)</span>
+                <div className="flex justify-between text-neutral-400 text-[11px]">
+                  <span className="uppercase tracking-wider">Accra Concierge Dispatch</span>
+                  <span className="text-emerald-400 font-bold">COMPLIMENTARY</span>
                 </div>
-                <div className="flex justify-between pt-2 border-t border-neutral-200 text-sm font-bold text-black">
+                <div className="flex justify-between pt-3 border-t border-white/10 text-sm font-bold text-white">
                   <span className="uppercase tracking-widest">Grand Total</span>
-                  <span>{formatGHS(subtotal)}</span>
+                  <span className="text-base text-gold-metallic">{formatGHS(subtotal)}</span>
                 </div>
               </div>
 
-              {/* Confirm Order Button with Loading State */}
+              {/* Confirm Order Trigger */}
               <button
                 onClick={handleConfirmOrder}
                 disabled={checkoutState === 'securing'}
-                className={`w-full py-3.5 text-xs uppercase tracking-widest font-bold border transition-all duration-150 flex items-center justify-center gap-2 ${
+                className={`w-full py-4 rounded-full text-xs uppercase tracking-[0.18em] font-extrabold border transition-all duration-300 flex items-center justify-center gap-2 ${
                   checkoutState === 'securing'
-                    ? 'bg-neutral-800 text-neutral-300 border-neutral-800 cursor-not-allowed'
-                    : 'bg-black text-white hover:bg-white hover:text-black border-black shadow-none'
+                    ? 'bg-neutral-800 text-neutral-400 border-neutral-700 cursor-not-allowed'
+                    : 'bg-white hover:bg-amber-200 text-black border-white hover:border-amber-200 shadow-glow hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
                 {checkoutState === 'securing' ? (
@@ -321,10 +338,10 @@ export const CartDrawer = () => {
                 )}
               </button>
 
-              <p className="text-[10px] text-neutral-500 text-center font-sans">
-                Encrypted handoff to private WhatsApp concierge. Payment via MTN MoMo / Telecel / Card
-                finalized directly on WhatsApp.
-              </p>
+              <div className="flex items-center justify-center gap-2 text-[10px] text-neutral-400 text-center font-sans">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Zero card fees. MTN MoMo / Telecel Cash / Card verified on WhatsApp.</span>
+              </div>
             </div>
           )}
         </aside>
