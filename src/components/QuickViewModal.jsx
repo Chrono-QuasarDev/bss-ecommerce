@@ -4,20 +4,32 @@ import { useCart } from "../context/CartContext";
 import { formatGHS } from "../utils/formatters";
 
 export const QuickViewModal = ({ product, isOpen, onClose }) => {
-  if (!isOpen || !product) return null;
-
   const { addToCart, openCart } = useCart();
   const [selectedSize, setSelectedSize] = useState("M");
-  const [activeImage, setActiveImage] = useState(product.image);
+  const [selectedVariantId, setSelectedVariantId] = useState("");
+  const [activeImage, setActiveImage] = useState("");
   const [justAdded, setJustAdded] = useState(false);
 
+  if (!isOpen || !product) return null;
+
+  const hasVariants = Array.isArray(product.variants);
+  const variants = product.variants || [];
+  const selectedVariant =
+    variants.find((variant) => variant.id === selectedVariantId) ||
+    variants.find((variant) => variant.available) ||
+    variants[0] ||
+    null;
+  const variantAvailable = !hasVariants || Boolean(selectedVariant?.available);
   const sizes = ["S", "M", "L", "XL"];
   const gallery = [product.image, product.secondaryImage].filter(Boolean);
 
   const handleAdd = () => {
+    if (!variantAvailable) return;
     addToCart({
       ...product,
-      selectedSize,
+      selectedSize: selectedVariant?.size || selectedSize,
+      selectedColor: selectedVariant?.color || "",
+      selectedVariantId: selectedVariant?.id || "",
     });
     setJustAdded(true);
     setTimeout(() => {
@@ -27,9 +39,12 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
   };
 
   const handleBuyNow = () => {
+    if (!variantAvailable) return;
     addToCart({
       ...product,
-      selectedSize,
+      selectedSize: selectedVariant?.size || selectedSize,
+      selectedColor: selectedVariant?.color || "",
+      selectedVariantId: selectedVariant?.id || "",
     });
     onClose();
     openCart();
@@ -139,31 +154,52 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* Size Selector */}
-                <div className="space-y-2 font-mono">
-                  <div className="flex justify-between text-xs uppercase tracking-widest text-neutral-400">
-                    <span>SELECT SIZE</span>
-                    <span className="text-white font-bold">{selectedSize}</span>
+                {hasVariants ? (
+                  <label className="block space-y-2 font-mono">
+                    <span className="block text-xs uppercase tracking-widest text-neutral-400">SELECT SIZE / COLOR</span>
+                    <select
+                      value={selectedVariant?.id || ""}
+                      onChange={(event) => setSelectedVariantId(event.target.value)}
+                      aria-label={`Choose an option for ${product.name}`}
+                      className="w-full min-h-[44px] px-3 rounded-xl border border-white/20 bg-[#101014] text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+                    >
+                      {!variants.length && <option value="">Unavailable</option>}
+                      {variants.map((variant) => {
+                        const label = [variant.size, variant.color].filter(Boolean).join(" · ") || "One size";
+                        return (
+                          <option key={variant.id} value={variant.id} disabled={!variant.available}>
+                            {label}{variant.available ? "" : " — Sold out"}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </label>
+                ) : (
+                  <div className="space-y-2 font-mono">
+                    <div className="flex justify-between text-xs uppercase tracking-widest text-neutral-400">
+                      <span>SELECT SIZE</span>
+                      <span className="text-white font-bold">{selectedSize}</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {sizes.map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          aria-label={`Select size ${size}`}
+                          aria-pressed={selectedSize === size}
+                          className={`min-h-[40px] py-2.5 rounded-xl border text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+                            selectedSize === size
+                              ? "border-white bg-white text-black shadow-glow-sm"
+                              : "border-white/15 text-neutral-200 hover:border-white/35 bg-white/[0.03]"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {sizes.map((size) => (
-                      <button
-                        key={size}
-                        type="button"
-                        onClick={() => setSelectedSize(size)}
-                        aria-label={`Select size ${size}`}
-                        aria-pressed={selectedSize === size}
-                        className={`min-h-[40px] py-2.5 rounded-xl border text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-amber-300 ${
-                          selectedSize === size
-                            ? "border-white bg-white text-black shadow-glow-sm"
-                            : "border-white/15 text-neutral-200 hover:border-white/35 bg-white/[0.03]"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -171,7 +207,8 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                 <button
                   type="button"
                   onClick={handleAdd}
-                  className={`w-full py-4 rounded-full text-xs uppercase tracking-[0.16em] font-extrabold border transition-all duration-300 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-amber-300 ${
+                  disabled={!variantAvailable}
+                  className={`w-full py-4 rounded-full disabled:opacity-45 disabled:cursor-not-allowed text-xs uppercase tracking-[0.16em] font-extrabold border transition-all duration-300 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-amber-300 ${
                     justAdded
                       ? "bg-emerald-400 text-black border-emerald-400 shadow-glow"
                       : "bg-white hover:bg-amber-200 text-black border-white hover:border-amber-200 shadow-glow hover:scale-[1.02]"

@@ -2,8 +2,8 @@ import { ArrowDownRight, ArrowRight, Shield, Sparkles } from "lucide-react";
 import { CONFIG } from "../config";
 import { formatGHS } from "../utils/formatters";
 
-export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
-  const featuredPiece = CONFIG.FALLBACK_PRODUCTS[1]; // Obsidian Hooded Parka
+export const Hero = ({ productCount, sheetStatus, featuredProduct, onFeaturedClick }) => {
+  const featuredPiece = featuredProduct || null;
 
   return (
     <section className="relative overflow-hidden bg-mesh-dark border-b border-white/[0.08] pt-8 pb-14 sm:py-20">
@@ -13,7 +13,7 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
       <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* Left Column: Brand Manifesto */}
-          <div className="lg:col-span-7 space-y-6 sm:space-y-8">
+          <div className="lg:col-span-8 space-y-6 sm:space-y-8">
             {/* Editorial Capsule Metadata */}
             <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
@@ -88,7 +88,8 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
             </div>
           </div>
 
-          {/* Right Column: Featured Haute Editorial Card */}
+          {/* Featured card uses only live catalog data when the Apps Script API is configured. */}
+          {featuredPiece && (
           <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
             <div className="relative w-full max-w-[460px] lg:max-w-[480px]">
               {/* Glowing backplate */}
@@ -160,6 +161,7 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </section>

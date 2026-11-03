@@ -66,11 +66,10 @@ export const ProductGrid = ({
             <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
             <div>
               <div className="font-heading font-bold text-white text-xs sm:text-sm tracking-wide">
-                GOOGLE SHEETS CMS SYNC NOTICE
+                COLLECTION UNAVAILABLE
               </div>
               <div className="text-xs text-neutral-300 font-sans leading-relaxed">
-                Could not connect to the live sheet. Showing the saved
-                collection.
+                We couldn't load the collection right now. Please try again.
               </div>
             </div>
           </div>

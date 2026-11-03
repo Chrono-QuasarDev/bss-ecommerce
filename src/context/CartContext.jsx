@@ -56,45 +56,42 @@ export const CartProvider = ({ children }) => {
     }
   }, [orderHistory]);
 
-  /**
-   * Generate a unique cart line key from product id + selected size.
-   * Products without a size use an empty string, so they still get a unique key.
-   */
-  const cartLineKey = (id, selectedSize) => `${id}::${selectedSize || ''}`;
+  /** Cart identity uses the variant ID when available, otherwise size + color. */
+  const variantKeyForItem = (item) =>
+    item.selectedVariantId || `${item.selectedSize || ''}::${item.selectedColor || ''}`;
+  const cartLineKey = (id, variantKey) => `${id}::${variantKey || ''}`;
 
-  // Cart operations — size-aware: same product in different sizes = distinct lines
   const addToCart = (product) => {
-    const key = cartLineKey(product.id, product.selectedSize);
+    const key = cartLineKey(product.id, variantKeyForItem(product));
     setCart((prev) => {
       const existing = prev.find(
-        (item) => cartLineKey(item.id, item.selectedSize) === key
+        (item) => cartLineKey(item.id, variantKeyForItem(item)) === key
       );
       if (existing) {
         return prev.map((item) =>
-          cartLineKey(item.id, item.selectedSize) === key
+          cartLineKey(item.id, variantKeyForItem(item)) === key
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
     });
-    // Open cart drawer immediately on add for responsive feedback
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (productId, selectedSize) => {
-    const key = cartLineKey(productId, selectedSize);
+  const removeFromCart = (productId, variantKey) => {
+    const key = cartLineKey(productId, variantKey);
     setCart((prev) =>
-      prev.filter((item) => cartLineKey(item.id, item.selectedSize) !== key)
+      prev.filter((item) => cartLineKey(item.id, variantKeyForItem(item)) !== key)
     );
   };
 
-  const updateQuantity = (productId, selectedSize, delta) => {
-    const key = cartLineKey(productId, selectedSize);
+  const updateQuantity = (productId, variantKey, delta) => {
+    const key = cartLineKey(productId, variantKey);
     setCart((prev) =>
       prev
         .map((item) => {
-          if (cartLineKey(item.id, item.selectedSize) === key) {
+          if (cartLineKey(item.id, variantKeyForItem(item)) === key) {
             const newQty = item.quantity + delta;
             return newQty > 0 ? { ...item, quantity: newQty } : null;
           }

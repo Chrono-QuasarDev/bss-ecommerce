@@ -10,11 +10,14 @@ import { SheetConfigModal } from './components/SheetConfigModal';
 import { QuickViewModal } from './components/QuickViewModal';
 import { Footer } from './components/Footer';
 import { fetchProductsFromGoogleSheet } from './utils/csvParser';
+import { fetchCatalogFromAppsScript } from './utils/catalogApi';
 import { CONFIG } from './config';
 
 export function App() {
-  const [products, setProducts] = useState(CONFIG.FALLBACK_PRODUCTS);
-  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState(
+    CONFIG.CATALOG_API_URL ? [] : CONFIG.FALLBACK_PRODUCTS
+  );
+  const [loading, setLoading] = useState(Boolean(CONFIG.CATALOG_API_URL));
   const [error, setError] = useState(null);
   const [sheetStatus, setSheetStatus] = useState('cached');
 
@@ -32,14 +35,12 @@ export function App() {
   const [sortBy, setSortBy] = useState('featured');
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
-  /**
-   * Google Sheets CMS Fetcher with Timeout & Fallback Safety
-   */
+  /** Load from the read-only Apps Script catalog, with legacy CSV support. */
   const loadProducts = async (targetUrl) => {
     const sheetUrl = targetUrl || customSheetUrl;
+    const useAppsScript = Boolean(CONFIG.CATALOG_API_URL);
 
-    // If unconfigured or placeholder URL, immediately use curated fallback without delay
-    if (!sheetUrl || sheetUrl.includes('placeholder') || sheetUrl.includes('REPLACE_WITH')) {
+    if (!useAppsScript && (!sheetUrl || sheetUrl.includes('placeholder') || sheetUrl.includes('REPLACE_WITH'))) {
       setProducts(CONFIG.FALLBACK_PRODUCTS);
       setSheetStatus('cached');
       setLoading(false);
@@ -50,20 +51,20 @@ export function App() {
     setError(null);
 
     try {
-      const fetchedProducts = await fetchProductsFromGoogleSheet(sheetUrl, 4500);
+      const fetchedProducts = useAppsScript
+        ? await fetchCatalogFromAppsScript(CONFIG.CATALOG_API_URL)
+        : await fetchProductsFromGoogleSheet(sheetUrl, 4500);
 
-      if (fetchedProducts && fetchedProducts.length > 0) {
-        setProducts(fetchedProducts);
-        setSheetStatus('synced');
-      } else {
-        throw new Error('Parsed product list was empty.');
-      }
+      // An empty API response is a valid empty catalog, not a sync failure.
+      setProducts(fetchedProducts || []);
+      setSheetStatus('synced');
     } catch (err) {
-      console.warn('[Atelier CMS] Google Sheets Notice:', err.message);
+      console.warn('[B.S.S catalog] Catalog sync notice:', err.message);
       setError(err.message);
-      // Guarantee products are always available via cached collection
-      setProducts(CONFIG.FALLBACK_PRODUCTS);
-      setSheetStatus('cached');
+      // Do not display unrelated demo products when the live API is configured.
+      if (!useAppsScript) setProducts(CONFIG.FALLBACK_PRODUCTS);
+      else setProducts([]);
+      setSheetStatus(useAppsScript ? 'error' : 'cached');
     } finally {
       setLoading(false);
     }
@@ -161,6 +162,11 @@ export function App() {
     setSearchQuery('');
   };
 
+  const featuredProduct =
+    products.find((product) => product.featured) ||
+    products[0] ||
+    (CONFIG.CATALOG_API_URL ? null : CONFIG.FALLBACK_PRODUCTS[0]);
+
   return (
     <div className="min-h-screen bg-[#060607] text-[#f2f2f4] flex flex-col font-sans selection:bg-amber-300 selection:text-black">
       {/* Top Navbar */}
@@ -179,7 +185,8 @@ export function App() {
       <Hero
         productCount={products.length}
         sheetStatus={sheetStatus}
-        onFeaturedClick={() => setQuickViewProduct(CONFIG.FALLBACK_PRODUCTS[1])}
+        featuredProduct={featuredProduct}
+        onFeaturedClick={() => setQuickViewProduct(featuredProduct)}
       />
 
       {/* Sticky Category Filter & Search Bar */}
