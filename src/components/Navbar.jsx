@@ -100,7 +100,7 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
               <Clock className="w-3.5 h-3.5 text-amber-300" />
               <span className="hidden sm:inline">MY ORDERS</span>
               {orderHistory.length > 0 && (
-                <span className="inline-flex items-center justify-center bg-white text-black text-[10px] w-4 h-4 rounded-full font-bold">
+                <span className="inline-flex items-center justify-center h-4 bg-white text-black text-[10px] w-4 h-4 rounded-full font-bold">
                   {orderHistory.length}
                 </span>
               )}
