@@ -10,20 +10,20 @@ export const CONFIG = {
   STORE_COUNTRY: "Ghana",
   CURRENCY_CODE: "GHS",
   CURRENCY_LOCALE: "en-GH",
-  
+
   // Ghanaian phone number in international format without '+' or spaces
   WHATSAPP_PHONE: "233540000000",
-  
+
   // Published Google Sheet CSV URL
   SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRL5Z7K-placeholder/pub?gid=0&single=true&output=csv",
-  
+
   // Free Database Webhook (Google Apps Script Web App / Zapier / Make)
-  WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbw_PLACEHOLDER_WEBHOOK_URL/exec",
-  
+  WEBHOOK_URL: "https://script.google.com/macros/s/AKfycby17RVF8KW9wgtoL0hcL2tcAqmfgYw85RRgLrWUcNLQIX8yF0etszIBWX4KcQMEQPE/exec",
+
   // VIP Mockup Pass Configuration
   VIP_PIN: "MOCKUP2026",
   VIP_ACCESS_PRICE_GHS: 50,
-  
+
   STORAGE_KEYS: {
     CART: "atelier_noir_cart_v2",
     ORDER_HISTORY: "atelier_noir_orders_v2",
