@@ -3,26 +3,31 @@
  * Manages order string generation, free webhook tracking, and WhatsApp redirection.
  */
 
-import { formatGHS } from './formatters.js';
+import { formatGHS } from "./formatters.js";
 
 /**
  * Format the exact order summary string required for WhatsApp concierge
  * Format:
  * Order Request:
  * Order ID: [ID]
- * 1x Item A (GH₵ 200.00)
- * 2x Item B (GH₵ 100.00)
+ * 1x Item A — Size S (GH₵ 200.00)
+ * 2x Item B — Size L (GH₵ 100.00)
  * Total: GH₵ 400.00
  *
  * @param {string} orderId
- * @param {Array<{name: string, quantity: number, price: number}>} items
+ * @param {Array<{name: string, quantity: number, price: number, selectedSize?: string}>} items
  * @param {number} totalAmount
  * @returns {string}
  */
 export const formatOrderString = (orderId, items, totalAmount) => {
   const itemsText = items
-    .map((item) => `${item.quantity}x ${item.name} (${formatGHS(item.price * item.quantity)})`)
-    .join('\n');
+    .map((item) => {
+      const sizeSuffix = item.selectedSize
+        ? ` — Size ${item.selectedSize}`
+        : "";
+      return `${item.quantity}x ${item.name}${sizeSuffix} (${formatGHS(item.price * item.quantity)})`;
+    })
+    .join("\n");
 
   return `Order Request:\nOrder ID: ${orderId}\n${itemsText}\nTotal: ${formatGHS(totalAmount)}`;
 };
@@ -40,8 +45,11 @@ export const formatOrderString = (orderId, items, totalAmount) => {
  */
 export const logOrderToWebhook = async (webhookUrl, payload) => {
   // If webhook is placeholder, simulate realistic network roundtrip
-  if (!webhookUrl || webhookUrl.includes('PLACEHOLDER')) {
-    console.info('[Order Logger] Placeholder Webhook detected. Simulated dispatch with payload:', payload);
+  if (!webhookUrl || webhookUrl.includes("PLACEHOLDER")) {
+    console.info(
+      "[Order Logger] Placeholder Webhook detected. Simulated dispatch with payload:",
+      payload,
+    );
     await new Promise((resolve) => setTimeout(resolve, 600));
     return { success: true, simulated: true };
   }
@@ -51,10 +59,10 @@ export const logOrderToWebhook = async (webhookUrl, payload) => {
 
   try {
     await fetch(webhookUrl, {
-      method: 'POST',
-      mode: 'no-cors',
+      method: "POST",
+      mode: "no-cors",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
       signal: controller.signal,
@@ -63,7 +71,10 @@ export const logOrderToWebhook = async (webhookUrl, payload) => {
     return { success: true };
   } catch (error) {
     clearTimeout(timeoutId);
-    console.warn('[Order Logger] Webhook fetch completed with non-fatal notice (mode: no-cors):', error);
+    console.warn(
+      "[Order Logger] Webhook fetch completed with non-fatal notice (mode: no-cors):",
+      error,
+    );
     // Even if aborted or network hiccups, never block the customer's WhatsApp handoff
     return { success: false, error: error.message };
   }
@@ -71,12 +82,12 @@ export const logOrderToWebhook = async (webhookUrl, payload) => {
 
 /**
  * Build the final WhatsApp Web / App intent URL
- * @param {string} phone - Ghanaian phone number in international format (e.g. 233540000000)
+ * @param {string} phone - Ghanaian phone number in international format (e.g. 233206764888)
  * @param {string} rawText - Unencoded message string
  * @returns {string}
  */
 export const buildWhatsAppUrl = (phone, rawText) => {
-  const sanitizedPhone = String(phone).replace(/[^0-9]/g, '');
+  const sanitizedPhone = String(phone).replace(/[^0-9]/g, "");
   const encodedString = encodeURIComponent(rawText);
   return `https://wa.me/${sanitizedPhone}?text=${encodedString}`;
 };
@@ -88,7 +99,7 @@ export const buildWhatsAppUrl = (phone, rawText) => {
  * @returns {string}
  */
 export const buildVipInquiryUrl = (phone, mockupName) => {
-  const sanitizedPhone = String(phone).replace(/[^0-9]/g, '');
+  const sanitizedPhone = String(phone).replace(/[^0-9]/g, "");
   const text = `Hello, I want to pay for the PIN to unlock ${mockupName}`;
   return `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent(text)}`;
 };

@@ -1,6 +1,6 @@
-# ATELIER NOIR — Serverless WhatsApp E-Commerce SPA
+# B.S.S — Bofoo Style Spectrum
 
-A high-end, strictly monochromatic, serverless e-commerce SPA engineered with **React**, **Vite**, and **Tailwind CSS**. Designed specifically for zero-budget backend hosting (Vercel, Netlify, GitHub Pages, or Cloudflare Pages) with prices strictly formatted in **Ghanaian Cedis (GH₵)**.
+Local Soul, Global Vision. A youth streetwear storefront built with **React**, **Vite**, and **Tailwind CSS**.
 
 ---
 

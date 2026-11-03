@@ -5,10 +5,18 @@ const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   // Cart state persisted to localStorage
+  // Migrate legacy items that may lack a selectedSize property
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.CART);
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+      // Normalise: ensure every item has a selectedSize (default to empty string)
+      return parsed.map((item) => ({
+        ...item,
+        selectedSize: item.selectedSize || '',
+      }));
     } catch (e) {
       console.error('Error reading cart from localStorage', e);
       return [];
@@ -48,13 +56,24 @@ export const CartProvider = ({ children }) => {
     }
   }, [orderHistory]);
 
-  // Cart operations
+  /**
+   * Generate a unique cart line key from product id + selected size.
+   * Products without a size use an empty string, so they still get a unique key.
+   */
+  const cartLineKey = (id, selectedSize) => `${id}::${selectedSize || ''}`;
+
+  // Cart operations — size-aware: same product in different sizes = distinct lines
   const addToCart = (product) => {
+    const key = cartLineKey(product.id, product.selectedSize);
     setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
+      const existing = prev.find(
+        (item) => cartLineKey(item.id, item.selectedSize) === key
+      );
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          cartLineKey(item.id, item.selectedSize) === key
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -63,15 +82,19 @@ export const CartProvider = ({ children }) => {
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (productId) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
+  const removeFromCart = (productId, selectedSize) => {
+    const key = cartLineKey(productId, selectedSize);
+    setCart((prev) =>
+      prev.filter((item) => cartLineKey(item.id, item.selectedSize) !== key)
+    );
   };
 
-  const updateQuantity = (productId, delta) => {
+  const updateQuantity = (productId, selectedSize, delta) => {
+    const key = cartLineKey(productId, selectedSize);
     setCart((prev) =>
       prev
         .map((item) => {
-          if (item.id === productId) {
+          if (cartLineKey(item.id, item.selectedSize) === key) {
             const newQty = item.quantity + delta;
             return newQty > 0 ? { ...item, quantity: newQty } : null;
           }

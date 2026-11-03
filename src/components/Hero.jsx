@@ -1,7 +1,6 @@
-import React from 'react';
-import { ArrowDownRight, Sparkles, Shield, ArrowRight } from 'lucide-react';
-import { CONFIG } from '../config';
-import { formatGHS } from '../utils/formatters';
+import { ArrowDownRight, ArrowRight, Shield, Sparkles } from "lucide-react";
+import { CONFIG } from "../config";
+import { formatGHS } from "../utils/formatters";
 
 export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
   const featuredPiece = CONFIG.FALLBACK_PRODUCTS[1]; // Obsidian Hooded Parka
@@ -13,10 +12,8 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
 
       <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-          
-          {/* Left Column: Haute Couture Manifesto */}
+          {/* Left Column: Brand Manifesto */}
           <div className="lg:col-span-7 space-y-6 sm:space-y-8">
-            
             {/* Editorial Capsule Metadata */}
             <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
@@ -32,12 +29,14 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
             {/* Main Headline */}
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight uppercase font-heading text-white leading-[1.05]">
-                SCULPTED FOR <br />
-                <span className="text-metallic italic font-display font-normal">THE DISCERNING</span>
+                {CONFIG.STORE_TAGLINE.split(", ")[0]}, <br />
+                <span className="text-metallic italic font-display font-normal">
+                  {CONFIG.STORE_TAGLINE.split(", ")[1]}
+                </span>
               </h1>
               <p className="text-sm sm:text-base text-neutral-300 font-sans max-w-xl leading-relaxed pt-1">
-                Haute-couture silhouettes and tactical streetwear engineered in Accra, Ghana.
-                Direct-to-client atelier. In-memory client filtering with direct WhatsApp concierge fulfillment.
+                Streetwear for a generation with its own point of view. This is{" "}
+                {CONFIG.STORE_SUBTITLE}.
               </p>
             </div>
 
@@ -63,16 +62,28 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
             {/* Trust Badges Bar */}
             <div className="pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs text-neutral-300">
               <div className="flex flex-col space-y-0.5">
-                <span className="text-white font-bold tracking-wider">LOCAL ACCRA ATELIER</span>
-                <span className="text-xs text-neutral-400 font-sans">Crafted in Osu</span>
+                <span className="text-white font-bold tracking-wider">
+                  B.S.S
+                </span>
+                <span className="text-xs text-neutral-400 font-sans">
+                  Bofoo Style Spectrum
+                </span>
               </div>
               <div className="flex flex-col space-y-0.5">
-                <span className="text-white font-bold tracking-wider">GHANAIAN CEDIS (GH₵)</span>
-                <span className="text-xs text-neutral-400 font-sans">MTN MoMo / Card / Cash</span>
+                <span className="text-white font-bold tracking-wider">
+                  YOUTH STREETWEAR
+                </span>
+                <span className="text-xs text-neutral-400 font-sans">
+                  Style your own way
+                </span>
               </div>
               <div className="flex flex-col space-y-0.5">
-                <span className="text-white font-bold tracking-wider">CONCIERGE DIRECT</span>
-                <span className="text-xs text-neutral-400 font-sans">WhatsApp 1-on-1 assistance</span>
+                <span className="text-white font-bold tracking-wider">
+                  {CONFIG.STORE_TAGLINE.toUpperCase()}
+                </span>
+                <span className="text-xs text-neutral-400 font-sans">
+                  Local Soul. Global Vision.
+                </span>
               </div>
             </div>
           </div>
@@ -80,7 +91,6 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
           {/* Right Column: Featured Haute Editorial Card */}
           <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
             <div className="relative w-full max-w-[460px] lg:max-w-[480px]">
-              
               {/* Glowing backplate */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-amber-500/10 to-transparent rounded-3xl blur-2xl -z-10" />
 
@@ -90,7 +100,9 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
                 className="glass-panel rounded-3xl p-4 sm:p-5 border border-white/15 shadow-2xl relative overflow-hidden group cursor-pointer transition-all duration-300 hover:border-white/30 hover:shadow-glow"
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && onFeaturedClick && onFeaturedClick()}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && onFeaturedClick && onFeaturedClick()
+                }
                 aria-label={`Featured piece: ${featuredPiece.name}`}
               >
                 {/* Image showcase */}
@@ -100,7 +112,7 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
                     alt={featuredPiece.name}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-                  
+
                   {/* Floating Badges */}
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
                     <span className="px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-white font-mono text-[10px] tracking-wider uppercase rounded-full">
@@ -148,7 +160,6 @@ export const Hero = ({ productCount, sheetStatus, onFeaturedClick }) => {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

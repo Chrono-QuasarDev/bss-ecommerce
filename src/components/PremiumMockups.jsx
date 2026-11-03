@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, Unlock, KeyRound, ExternalLink, ShieldCheck, AlertCircle, Sparkles, Terminal, Cpu } from 'lucide-react';
-import confetti from 'canvas-confetti';
-import { CONFIG } from '../config';
-import { buildVipInquiryUrl } from '../utils/checkout';
-import { formatGHS } from '../utils/formatters';
+import confetti from "canvas-confetti";
+import {
+  AlertCircle,
+  Cpu,
+  ExternalLink,
+  KeyRound,
+  Lock,
+  ShieldCheck,
+  Terminal,
+  Unlock,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { CONFIG } from "../config";
+import { buildVipInquiryUrl } from "../utils/checkout";
+import { formatGHS } from "../utils/formatters";
 
 export const PremiumMockups = () => {
   const [unlockedIds, setUnlockedIds] = useState(() => {
@@ -21,7 +30,10 @@ export const PremiumMockups = () => {
 
   useEffect(() => {
     try {
-      localStorage.setItem(CONFIG.STORAGE_KEYS.UNLOCKED_MOCKUPS, JSON.stringify(unlockedIds));
+      localStorage.setItem(
+        CONFIG.STORAGE_KEYS.UNLOCKED_MOCKUPS,
+        JSON.stringify(unlockedIds),
+      );
     } catch (e) {
       console.error(e);
     }
@@ -33,9 +45,12 @@ export const PremiumMockups = () => {
   };
 
   const handleUnlock = (mockupId) => {
-    const enteredPin = (pinInputs[mockupId] || '').trim();
+    const enteredPin = (pinInputs[mockupId] || "").trim();
     if (!enteredPin) {
-      setErrors((prev) => ({ ...prev, [mockupId]: 'Please input your VIP authorization PIN.' }));
+      setErrors((prev) => ({
+        ...prev,
+        [mockupId]: "Please input your VIP authorization PIN.",
+      }));
       return;
     }
 
@@ -46,14 +61,19 @@ export const PremiumMockups = () => {
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#d4af37', '#ffffff', '#f59e0b', '#cbd5e1'],
+          colors: ["#d4af37", "#ffffff", "#f59e0b", "#cbd5e1"],
         });
       } catch (err) {
         // Fallback safely if confetti cannot render
       }
 
-      setUnlockedIds((prev) => (prev.includes(mockupId) ? prev : [...prev, mockupId]));
-      setSuccessNotices((prev) => ({ ...prev, [mockupId]: 'VIP PIN Authenticated. CAD Archive Revealed.' }));
+      setUnlockedIds((prev) =>
+        prev.includes(mockupId) ? prev : [...prev, mockupId],
+      );
+      setSuccessNotices((prev) => ({
+        ...prev,
+        [mockupId]: "VIP PIN Authenticated. CAD Archive Revealed.",
+      }));
       setErrors((prev) => ({ ...prev, [mockupId]: null }));
     } else {
       setErrors((prev) => ({
@@ -65,12 +85,17 @@ export const PremiumMockups = () => {
 
   const handlePurchaseAccess = (mockupName) => {
     const waUrl = buildVipInquiryUrl(CONFIG.WHATSAPP_PHONE, mockupName);
-    window.open(waUrl, '_blank', 'noopener,noreferrer');
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleDemoUnlockAll = () => {
     try {
-      confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 }, colors: ['#d4af37', '#ffffff'] });
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.5 },
+        colors: ["#d4af37", "#ffffff"],
+      });
     } catch {}
     setUnlockedIds(CONFIG.PREMIUM_MOCKUPS.map((m) => m.id));
   };
@@ -81,12 +106,14 @@ export const PremiumMockups = () => {
   };
 
   return (
-    <section id="mockups-section" className="relative bg-[#050508] text-white py-16 sm:py-28 border-t border-white/[0.08] overflow-hidden">
+    <section
+      id="mockups-section"
+      className="relative bg-[#050508] text-white py-16 sm:py-28 border-t border-white/[0.08] overflow-hidden"
+    >
       {/* Ambient background glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-r from-amber-500/10 via-purple-500/5 to-cyan-500/5 blur-[160px] pointer-events-none -z-10" />
 
       <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
-        
         {/* Vault Header */}
         <div className="glass-panel rounded-3xl p-6 sm:p-10 lg:p-12 border border-white/15 mb-10 sm:mb-14 relative overflow-hidden">
           <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -95,17 +122,18 @@ export const PremiumMockups = () => {
             <div className="space-y-3 sm:space-y-4 max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-300 font-mono text-xs tracking-wider uppercase">
                 <Terminal className="w-3.5 h-3.5" />
-                <span>CONFIDENTIAL ATELIER ARCHIVE // FW26 PRE-RELEASE</span>
+                <span>B.S.S. ARCHIVE // FW26 PRE-RELEASE</span>
               </div>
 
               <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight font-heading text-white">
-                THE VIP VAULT: <span className="text-gold-metallic">PENDING SLOTS</span>
+                THE VIP VAULT:{" "}
+                <span className="text-gold-metallic">PENDING SLOTS</span>
               </h2>
 
               <p className="text-xs sm:text-sm text-neutral-300 font-sans leading-relaxed">
-                Unreleased CAD prototypes undergoing technical pattern cutting in our Accra studio. Access
-                is strictly restricted. Authenticated VIP holders inspect 4K technical schematics and can request
-                pre-order allocation with the atelier via WhatsApp.
+                Explore preview concepts from B.S.S. and view available details.
+                Get in touch through WhatsApp with questions about a specific
+                concept.
               </p>
             </div>
 
@@ -113,7 +141,10 @@ export const PremiumMockups = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 font-mono text-xs">
               <div className="px-4 py-2.5 rounded-full border border-white/15 bg-white/[0.04] text-neutral-200 flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-amber-300" />
-                <span>{unlockedIds.length} / {CONFIG.PREMIUM_MOCKUPS.length} DECLASSIFIED</span>
+                <span>
+                  {unlockedIds.length} / {CONFIG.PREMIUM_MOCKUPS.length}{" "}
+                  DECLASSIFIED
+                </span>
               </div>
 
               {unlockedIds.length > 0 ? (
@@ -141,7 +172,7 @@ export const PremiumMockups = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {CONFIG.PREMIUM_MOCKUPS.map((mockup) => {
             const isUnlocked = unlockedIds.includes(mockup.id);
-            const currentPin = pinInputs[mockup.id] || '';
+            const currentPin = pinInputs[mockup.id] || "";
             const error = errors[mockup.id];
             const success = successNotices[mockup.id];
 
@@ -153,12 +184,14 @@ export const PremiumMockups = () => {
                 {/* Visual Area */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-black flex items-center justify-center">
                   <img
-                    src={isUnlocked ? mockup.revealedImage : mockup.blurredImage}
+                    src={
+                      isUnlocked ? mockup.revealedImage : mockup.blurredImage
+                    }
                     alt={mockup.name}
                     className={`w-full h-full object-cover transition-all duration-700 ${
                       isUnlocked
-                        ? 'filter blur-0 scale-100 brightness-100'
-                        : 'filter blur-2xl scale-110 brightness-40 select-none pointer-events-none'
+                        ? "filter blur-0 scale-100 brightness-100"
+                        : "filter blur-2xl scale-110 brightness-40 select-none pointer-events-none"
                     }`}
                   />
 
@@ -203,7 +236,9 @@ export const PremiumMockups = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-neutral-400">
                       <span>{mockup.category}</span>
-                      <span className="text-amber-300">{mockup.releaseQuarter}</span>
+                      <span className="text-amber-300">
+                        {mockup.releaseQuarter}
+                      </span>
                     </div>
 
                     <h3 className="text-lg font-bold uppercase tracking-tight text-white font-heading">
@@ -217,15 +252,21 @@ export const PremiumMockups = () => {
                           <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-white/[0.04] border border-white/10 text-xs">
                             <div>
                               <div className="text-neutral-400">PATTERNS</div>
-                              <div className="font-bold text-white">{mockup.blueprintStats.patternPieces} Cut</div>
+                              <div className="font-bold text-white">
+                                {mockup.blueprintStats.patternPieces} Cut
+                              </div>
                             </div>
                             <div>
                               <div className="text-neutral-400">ASSEMBLY</div>
-                              <div className="font-bold text-white">{mockup.blueprintStats.assemblyTime}</div>
+                              <div className="font-bold text-white">
+                                {mockup.blueprintStats.assemblyTime}
+                              </div>
                             </div>
                             <div>
                               <div className="text-neutral-400">HARDWARE</div>
-                              <div className="font-bold text-white line-clamp-1">{mockup.blueprintStats.hardware}</div>
+                              <div className="font-bold text-white line-clamp-1">
+                                {mockup.blueprintStats.hardware}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -236,15 +277,21 @@ export const PremiumMockups = () => {
                           </div>
                           <ul className="space-y-1.5 text-neutral-200 text-xs list-disc list-inside font-sans">
                             {mockup.techSpecs.map((spec, idx) => (
-                              <li key={idx} className="line-clamp-2 leading-relaxed">{spec}</li>
+                              <li
+                                key={idx}
+                                className="line-clamp-2 leading-relaxed"
+                              >
+                                {spec}
+                              </li>
                             ))}
                           </ul>
                         </div>
                       </div>
                     ) : (
                       <p className="text-xs text-neutral-300 leading-relaxed font-sans">
-                        Full structural blueprint, laser pattern schematics, and prototype pre-order allocation
-                        are encrypted until authentic VIP PIN validation.
+                        Full structural blueprint, laser pattern schematics, and
+                        prototype pre-order allocation are encrypted until
+                        authentic VIP PIN validation.
                       </p>
                     )}
                   </div>
@@ -255,11 +302,14 @@ export const PremiumMockups = () => {
                       <div className="space-y-3">
                         <div className="flex items-start gap-2.5 p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 text-xs font-mono leading-relaxed">
                           <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                          <span>VIP Access Unlocked on this device. Inquire with the merchant on WhatsApp to check slot availability.</span>
+                          <span>
+                            VIP Access Unlocked on this device. Inquire with the
+                            merchant on WhatsApp to check slot availability.
+                          </span>
                         </div>
                         <a
                           href={`https://wa.me/${CONFIG.WHATSAPP_PHONE}?text=${encodeURIComponent(
-                            `Hello Atelier Noir, I unlocked VIP Mock-up [${mockup.name} (${mockup.id})]. I would like to inquire about pre-order production slot availability.`
+                            `Hello B.S.S, I unlocked VIP Mock-up [${mockup.name} (${mockup.id})]. I would like to ask about this concept.`,
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -277,7 +327,10 @@ export const PremiumMockups = () => {
                           onClick={() => handlePurchaseAccess(mockup.name)}
                           className="w-full py-3.5 bg-white text-black hover:bg-amber-200 rounded-full font-mono text-xs uppercase tracking-[0.16em] font-extrabold flex items-center justify-center gap-2 transition-all shadow-glow hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-amber-300"
                         >
-                          <span>Purchase Access ({formatGHS(CONFIG.VIP_ACCESS_PRICE_GHS)})</span>
+                          <span>
+                            Purchase Access (
+                            {formatGHS(CONFIG.VIP_ACCESS_PRICE_GHS)})
+                          </span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </button>
 
@@ -287,15 +340,22 @@ export const PremiumMockups = () => {
 
                         {/* 2. PIN Unlock Input & Button */}
                         <div className="flex gap-2">
-                          <label htmlFor={`pin-input-${mockup.id}`} className="sr-only">
+                          <label
+                            htmlFor={`pin-input-${mockup.id}`}
+                            className="sr-only"
+                          >
                             VIP PIN for {mockup.name}
                           </label>
                           <input
                             id={`pin-input-${mockup.id}`}
                             type="text"
                             value={currentPin}
-                            onChange={(e) => handlePinChange(mockup.id, e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleUnlock(mockup.id)}
+                            onChange={(e) =>
+                              handlePinChange(mockup.id, e.target.value)
+                            }
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleUnlock(mockup.id)
+                            }
                             placeholder={`VIP PIN (Try ${CONFIG.VIP_PIN})`}
                             className="flex-1 bg-white/[0.05] border border-white/20 focus:border-amber-300 rounded-full px-4 py-2.5 text-xs font-mono text-white placeholder-neutral-400 uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-300/70 transition-all"
                           />

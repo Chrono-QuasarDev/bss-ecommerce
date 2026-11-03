@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
-import { X, Clock, Copy, Check, ExternalLink, Trash2, Receipt } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { formatGHS, formatDateTime } from '../utils/formatters';
-import { CONFIG } from '../config';
+import {
+  Check,
+  Clock,
+  Copy,
+  ExternalLink,
+  Receipt,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useState } from "react";
+import { CONFIG } from "../config";
+import { useCart } from "../context/CartContext";
+import { formatDateTime, formatGHS } from "../utils/formatters";
 
 export const OrderHistoryModal = () => {
-  const { isOrderHistoryOpen, closeOrderHistory, orderHistory, clearOrderHistory } = useCart();
+  const {
+    isOrderHistoryOpen,
+    closeOrderHistory,
+    orderHistory,
+    clearOrderHistory,
+  } = useCart();
   const [copiedId, setCopiedId] = useState(null);
 
   if (!isOrderHistoryOpen) return null;
@@ -17,13 +30,18 @@ export const OrderHistoryModal = () => {
   };
 
   const handleInquire = (orderId) => {
-    const text = `Hello Atelier Noir, I am following up on my previous Order ID: ${orderId}`;
+    const text = `Hello B.S.S, I am following up on my previous Order ID: ${orderId}`;
     const url = `https://wa.me/${CONFIG.WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Order History">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Order History"
+    >
       {/* Blurred Backdrop */}
       <div
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
@@ -32,7 +50,6 @@ export const OrderHistoryModal = () => {
 
       <div className="min-h-full flex items-center justify-center p-4">
         <div className="relative w-full max-w-2xl glass-panel rounded-3xl border border-white/15 p-6 sm:p-8 font-mono text-white shadow-2xl my-8">
-          
           {/* Header */}
           <div className="flex items-center justify-between pb-5 border-b border-white/10">
             <div className="flex items-center gap-3">
@@ -44,7 +61,10 @@ export const OrderHistoryModal = () => {
                   LOCAL ORDER REQUESTS
                 </h2>
                 <div className="text-xs text-neutral-400">
-                  {orderHistory.length} {orderHistory.length === 1 ? 'REQUEST RECORDED' : 'REQUESTS RECORDED ON THIS DEVICE'}
+                  {orderHistory.length}{" "}
+                  {orderHistory.length === 1
+                    ? "REQUEST RECORDED"
+                    : "REQUESTS RECORDED ON THIS DEVICE"}
                 </div>
               </div>
             </div>
@@ -71,7 +91,8 @@ export const OrderHistoryModal = () => {
                     NO SAVED ORDER REQUESTS
                   </p>
                   <p className="text-xs text-neutral-300 font-sans max-w-xs mx-auto leading-relaxed">
-                    When you send an order request via WhatsApp, a copy is automatically saved on this device for your reference.
+                    When you send an order request via WhatsApp, a copy is
+                    automatically saved on this device for your reference.
                   </p>
                 </div>
               </div>
@@ -115,9 +136,13 @@ export const OrderHistoryModal = () => {
                   {/* Items List */}
                   <div className="space-y-2 text-xs">
                     {order.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-neutral-200">
+                      <div
+                        key={idx}
+                        className="flex justify-between items-center text-neutral-200"
+                      >
                         <span className="line-clamp-1">
-                          {item.quantity}x {item.name} {item.selectedSize ? `(${item.selectedSize})` : ''}
+                          {item.quantity}x {item.name}{" "}
+                          {item.selectedSize ? `(${item.selectedSize})` : ""}
                         </span>
                         <span className="font-bold text-white flex-shrink-0">
                           {formatGHS(item.price * item.quantity)}

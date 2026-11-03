@@ -1,12 +1,12 @@
 /**
- * Global Configuration for ATELIER NOIR
- * Avant-garde serverless e-commerce curated in Accra, Ghana.
+ * Global Configuration for B.S.S. (Bofoo Style Spectrum)
  */
 
 export const CONFIG = {
-  STORE_NAME: import.meta.env.VITE_STORE_NAME || "ATELIER NOIR",
-  STORE_SUBTITLE:
-    import.meta.env.VITE_STORE_SUBTITLE || "Accra Archive / Direct Concierge",
+  STORE_NAME: import.meta.env.VITE_STORE_NAME || "B.S.S",
+  STORE_SUBTITLE: import.meta.env.VITE_STORE_SUBTITLE || "Bofoo Style Spectrum",
+  STORE_TAGLINE:
+    import.meta.env.VITE_STORE_TAGLINE || "Local Soul, Global Vision",
   STORE_CITY: import.meta.env.VITE_STORE_CITY || "Accra",
   STORE_COUNTRY: import.meta.env.VITE_STORE_COUNTRY || "Ghana",
   CURRENCY_CODE: import.meta.env.VITE_CURRENCY_CODE || "GHS",

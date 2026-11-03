@@ -11,8 +11,14 @@ export const ProductCard = ({ product, onQuickView }) => {
   const [justAdded, setJustAdded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  // Check if item is already in cart
-  const cartItem = cart.find((item) => item.id === product.id);
+  // Check if item is already in cart for the currently selected size
+  const cartItem = cart.find(
+    (item) => item.id === product.id && item.selectedSize === selectedSize
+  );
+  // Total quantity of this product across all sizes (for the badge)
+  const totalInBag = cart
+    .filter((item) => item.id === product.id)
+    .reduce((sum, item) => sum + item.quantity, 0);
 
   const handleAdd = (e) => {
     e.stopPropagation();
@@ -67,9 +73,9 @@ export const ProductCard = ({ product, onQuickView }) => {
             {product.category || 'Atelier'}
           </span>
 
-          {cartItem ? (
+          {totalInBag > 0 ? (
             <span className="px-2.5 py-1 bg-white text-black font-mono text-[11px] font-bold tracking-wider uppercase rounded-full shadow-lg">
-              IN BAG [{cartItem.quantity}]
+              IN BAG [{totalInBag}]
             </span>
           ) : product.badge ? (
             <span className="px-2.5 py-1 bg-amber-400 text-black font-mono text-[10px] font-bold tracking-wider uppercase rounded-full shadow-lg">
