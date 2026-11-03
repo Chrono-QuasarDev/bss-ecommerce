@@ -2,6 +2,7 @@ import { Check, ShoppingBag, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { formatGHS } from "../utils/formatters";
+import { PRODUCT_IMAGE_FALLBACK } from "../utils/imageFallback";
 
 export const QuickViewModal = ({ product, isOpen, onClose }) => {
   const { addToCart, openCart } = useCart();
@@ -21,6 +22,12 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
     null;
   const variantAvailable = !hasVariants || Boolean(selectedVariant?.available);
   const sizes = ["S", "M", "L", "XL"];
+  const sizeOptions = [...new Set(variants.map((variant) => variant.size).filter(Boolean))];
+  const colorOptions = [...new Set(variants.map((variant) => variant.color).filter(Boolean))];
+  const chooseVariant = (predicate) => {
+    const match = variants.find((variant) => predicate(variant) && variant.available) || variants.find(predicate);
+    if (match) setSelectedVariantId(match.id);
+  };
   const gallery = [product.image, product.secondaryImage].filter(Boolean);
 
   const handleAdd = () => {
@@ -80,8 +87,9 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
             <div className="p-6 sm:p-8 bg-black/40 flex flex-col justify-between space-y-4">
               <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 relative">
                 <img
-                  src={activeImage || product.image}
-                  alt={product.name}
+                  src={activeImage || product.image || PRODUCT_IMAGE_FALLBACK}
+                  alt={product.imageAlt || product.name}
+                  onError={() => setActiveImage(PRODUCT_IMAGE_FALLBACK)}
                   className="w-full h-full object-cover transition-all duration-500"
                 />
                 {product.badge && (
@@ -120,11 +128,8 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
             {/* Details Right Column */}
             <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-400 uppercase tracking-widest">
-                  <span>CATEGORY // {product.category}</span>
-                  <span className="text-amber-300 font-bold">
-                    REF {product.id}
-                  </span>
+                <div className="text-xs font-mono text-neutral-400 uppercase tracking-widest">
+                  CATEGORY // {product.category}
                 </div>
 
                 <h2
@@ -155,25 +160,35 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                 </div>
 
                 {hasVariants ? (
-                  <label className="block space-y-2 font-mono">
-                    <span className="block text-xs uppercase tracking-widest text-neutral-400">SELECT SIZE / COLOR</span>
-                    <select
-                      value={selectedVariant?.id || ""}
-                      onChange={(event) => setSelectedVariantId(event.target.value)}
-                      aria-label={`Choose an option for ${product.name}`}
-                      className="w-full min-h-[44px] px-3 rounded-xl border border-white/20 bg-[#101014] text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
-                    >
-                      {!variants.length && <option value="">Unavailable</option>}
-                      {variants.map((variant) => {
-                        const label = [variant.size, variant.color].filter(Boolean).join(" · ") || "One size";
-                        return (
-                          <option key={variant.id} value={variant.id} disabled={!variant.available}>
-                            {label}{variant.available ? "" : " — Sold out"}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </label>
+                  <div className="space-y-3 font-mono">
+                    {sizeOptions.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-widest text-neutral-400">SELECT SIZE</div>
+                        <div className="flex flex-wrap gap-2">
+                          {sizeOptions.map((size) => {
+                            const available = variants.some((variant) => variant.size === size && variant.available);
+                            return (
+                              <button key={size} type="button" disabled={!available}
+                                onClick={() => chooseVariant((variant) => variant.size === size && (!selectedVariant?.color || variant.color === selectedVariant.color))}
+                                aria-label={`Select size ${size}`} aria-pressed={selectedVariant?.size === size}
+                                className={`min-h-10 min-w-10 px-3 rounded-xl border text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:opacity-35 disabled:line-through ${selectedVariant?.size === size ? "border-white bg-white text-black shadow-glow-sm" : "border-white/15 text-neutral-200 hover:border-white/35 bg-white/[0.03]"}`}>
+                                {size}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {colorOptions.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-widest text-neutral-400">COLOR</div>
+                        <p className="text-sm font-sans text-neutral-200">
+                          {selectedVariant?.color || colorOptions.join(', ')}
+                        </p>
+                      </div>
+                    )}
+                    {!variantAvailable && <p className="text-xs uppercase text-rose-300">Sold out</p>}
+                  </div>
                 ) : (
                   <div className="space-y-2 font-mono">
                     <div className="flex justify-between text-xs uppercase tracking-widest text-neutral-400">

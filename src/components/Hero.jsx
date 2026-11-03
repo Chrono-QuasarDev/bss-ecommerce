@@ -1,142 +1,144 @@
 import { ArrowDownRight, ArrowRight, Shield, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import { CONFIG } from "../config";
 import { formatGHS } from "../utils/formatters";
 
-export const Hero = ({ productCount, sheetStatus, featuredProduct, onFeaturedClick }) => {
+export const Hero = ({ productCount, featuredProduct, onFeaturedClick }) => {
+  const [imageFailed, setImageFailed] = useState(false);
   const featuredPiece = featuredProduct || null;
 
-  return (
-    <section className="relative overflow-hidden bg-mesh-dark border-b border-white/[0.08] pt-8 pb-14 sm:py-20">
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-amber-500/10 via-white/5 to-transparent blur-[120px] pointer-events-none -z-10" />
+  useEffect(() => {
+    setImageFailed(false);
+  }, [featuredPiece?.id, featuredPiece?.image]);
 
-      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-          {/* Left Column: Brand Manifesto */}
-          <div className="lg:col-span-8 space-y-6 sm:space-y-8">
-            {/* Editorial Capsule Metadata */}
-            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-md">
-              <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-              <span className="font-mono text-xs tracking-[0.18em] text-neutral-200 uppercase">
-                CAPSULE IV // MONOLITH SERIES
+  return (
+    <section className="relative flex min-h-[calc(100svh-101px)] items-center overflow-hidden bg-mesh-dark border-b border-white/[0.08] py-10 sm:min-h-[calc(100svh-117px)] sm:py-14 lg:py-16">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_75%_15%,rgba(212,175,55,0.08),transparent_42%)]" />
+      <div className="relative mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] gap-8 lg:gap-12 xl:gap-16 items-center">
+          <div className="min-w-0 space-y-6 sm:space-y-8">
+            <div className="inline-flex max-w-full items-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-md">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
+              <span className="truncate font-mono text-[10px] sm:text-xs tracking-[0.14em] text-neutral-200 uppercase">
+                B.S.S COLLECTION
               </span>
               <span className="text-neutral-500">•</span>
-              <span className="font-mono text-xs text-amber-300 font-semibold tracking-wider uppercase">
-                {productCount} PIECES
+              <span className="shrink-0 font-mono text-[10px] sm:text-xs text-amber-300 font-semibold tracking-wider uppercase">
+                {productCount} {productCount === 1 ? "PIECE" : "PIECES"}
               </span>
             </div>
 
-            {/* Main Headline */}
             <div className="space-y-3">
+              <p className="font-mono text-xs sm:text-sm tracking-[0.2em] text-neutral-300 uppercase">
+                {CONFIG.STORE_NAME} <span className="text-neutral-500">/</span>{" "}
+                {CONFIG.STORE_SUBTITLE}
+              </p>
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight uppercase font-heading text-white leading-[1.05]">
-                {CONFIG.STORE_TAGLINE.split(", ")[0]}, <br />
+                <span className="whitespace-nowrap">
+                  {CONFIG.STORE_TAGLINE.split(", ")[0]},
+                </span>{" "}
+                <br />
                 <span className="text-metallic italic font-display font-normal">
                   {CONFIG.STORE_TAGLINE.split(", ")[1]}
                 </span>
               </h1>
-              <p className="text-sm sm:text-base text-neutral-300 font-sans max-w-xl leading-relaxed pt-1">
-                Streetwear for a generation with its own point of view. This is{" "}
-                {CONFIG.STORE_SUBTITLE}.
+              <p className="max-w-xl text-sm sm:text-base text-neutral-300 font-sans leading-relaxed pt-1">
+                Streetwear for a generation with its own point of view.
               </p>
             </div>
 
-            {/* Quick Actions & Highlights */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-1">
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <a
                 href="#catalog-section"
-                className="group flex items-center gap-3 px-6 sm:px-7 py-3.5 sm:py-4 bg-white text-black hover:bg-amber-200 rounded-full font-mono text-xs font-bold tracking-[0.16em] uppercase transition-all duration-300 shadow-glow hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                className="group inline-flex min-h-12 items-center gap-3 px-6 sm:px-7 py-3 bg-white text-black hover:bg-amber-200 rounded-full font-mono text-xs font-bold tracking-[0.14em] uppercase transition-all shadow-glow focus:outline-none focus:ring-2 focus:ring-amber-300"
               >
-                <span>EXPLORE CAPSULE</span>
+                <span>Explore collection</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
-
               <a
                 href="#mockups-section"
-                className="group flex items-center gap-2.5 px-5 sm:px-6 py-3.5 sm:py-4 bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/20 hover:border-amber-400/50 rounded-full font-mono text-xs font-medium tracking-[0.14em] uppercase transition-all duration-300 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-amber-300"
+                className="inline-flex min-h-12 items-center gap-2.5 px-5 sm:px-6 py-3 bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/20 hover:border-amber-400/50 rounded-full font-mono text-xs tracking-[0.12em] uppercase transition-all focus:outline-none focus:ring-2 focus:ring-amber-300"
               >
-                <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                <span>ENTER VIP VAULT</span>
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>Explore B.S.S</span>
               </a>
             </div>
 
-            {/* Trust Badges Bar */}
-            <div className="pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs text-neutral-300">
-              <div className="flex flex-col space-y-0.5">
-                <span className="text-white font-bold tracking-wider">
+            <div className="pt-5 sm:pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 font-mono text-xs">
+              <div className="min-w-0">
+                <span className="block text-white font-bold tracking-wider">
                   B.S.S
                 </span>
-                <span className="text-xs text-neutral-400 font-sans">
+                <span className="block text-neutral-400 font-sans">
                   Bofoo Style Spectrum
                 </span>
               </div>
-              <div className="flex flex-col space-y-0.5">
-                <span className="text-white font-bold tracking-wider">
+              <div className="min-w-0">
+                <span className="block text-white font-bold tracking-wider">
                   YOUTH STREETWEAR
                 </span>
-                <span className="text-xs text-neutral-400 font-sans">
+                <span className="block text-neutral-400 font-sans">
                   Style your own way
                 </span>
               </div>
-              <div className="flex flex-col space-y-0.5">
-                <span className="text-white font-bold tracking-wider">
-                  {CONFIG.STORE_TAGLINE.toUpperCase()}
+              <div className="min-w-0">
+                <span className="block text-white font-bold tracking-wider">
+                  LOCAL SOUL
                 </span>
-                <span className="text-xs text-neutral-400 font-sans">
-                  Local Soul. Global Vision.
+                <span className="block text-neutral-400 font-sans">
+                  Global vision
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Featured card uses only live catalog data when the Apps Script API is configured. */}
           {featuredPiece && (
-          <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[460px] lg:max-w-[480px]">
-              {/* Glowing backplate */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-amber-500/10 to-transparent rounded-3xl blur-2xl -z-10" />
-
-              {/* Glass Hero Card */}
-              <div
+            <div className="w-full min-w-0 flex justify-center lg:justify-end">
+              <button
+                type="button"
                 onClick={onFeaturedClick}
-                className="glass-panel rounded-3xl p-4 sm:p-5 border border-white/15 shadow-2xl relative overflow-hidden group cursor-pointer transition-all duration-300 hover:border-white/30 hover:shadow-glow"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && onFeaturedClick && onFeaturedClick()
-                }
-                aria-label={`Featured piece: ${featuredPiece.name}`}
+                aria-label={`View featured product: ${featuredPiece.name}`}
+                className="group w-full max-w-[380px] xl:max-w-[420px] rounded-3xl p-3 sm:p-4 text-left glass-panel border border-white/15 shadow-2xl transition-colors hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-amber-300"
               >
-                {/* Image showcase */}
-                <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-900">
-                  <img
-                    src={featuredPiece.image}
-                    alt={featuredPiece.name}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-
-                  {/* Floating Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <span className="px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-white font-mono text-[10px] tracking-wider uppercase rounded-full">
-                      FEATURED ARCHIVE
+                <div className="relative aspect-[4/4.5] overflow-hidden rounded-2xl bg-[#111114]">
+                  {!imageFailed && featuredPiece.image ? (
+                    <img
+                      src={featuredPiece.image}
+                      alt={featuredPiece.imageAlt || featuredPiece.name}
+                      loading="eager"
+                      onError={() => setImageFailed(true)}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_50%_35%,rgba(212,175,55,0.18),transparent_38%),linear-gradient(145deg,#19191f,#09090c)] p-6 text-center">
+                      <span className="font-heading text-5xl sm:text-6xl font-extrabold tracking-[0.18em] text-white/90">
+                        B.S.S
+                      </span>
+                      <span className="mt-2 font-mono text-[10px] tracking-[0.24em] text-neutral-400 uppercase">
+                        Bofoo Style Spectrum
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-white/20 bg-black/80 px-3 py-1 font-mono text-[10px] tracking-wider text-white uppercase">
+                      Featured
                     </span>
-                    {featuredPiece.stock && (
-                      <span className="px-3 py-1 bg-amber-400 text-black font-mono text-[10px] font-bold tracking-wider uppercase rounded-full shadow-lg">
-                        {featuredPiece.stock} AVAILABLE
+                    {featuredPiece.inStock === false && (
+                      <span className="rounded-full bg-neutral-200 px-3 py-1 font-mono text-[10px] font-bold text-black uppercase">
+                        Sold out
                       </span>
                     )}
                   </div>
-
-                  {/* Bottom glass metadata strip */}
-                  <div className="absolute inset-x-3 bottom-3 p-4 rounded-xl bg-black/85 backdrop-blur-xl border border-white/15 flex items-center justify-between">
-                    <div>
-                      <div className="font-mono text-xs tracking-wider text-amber-300 uppercase">
+                  <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 rounded-xl border border-white/15 bg-black/85 p-3 sm:p-4 backdrop-blur-xl">
+                    <div className="min-w-0">
+                      <div className="font-mono text-[10px] sm:text-xs tracking-wider text-amber-300 uppercase">
                         {featuredPiece.category}
                       </div>
-                      <div className="font-heading text-sm sm:text-base font-bold text-white uppercase line-clamp-1">
+                      <div className="line-clamp-2 font-heading text-sm sm:text-base font-bold text-white uppercase">
                         {featuredPiece.name}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="shrink-0 text-right">
                       <div className="font-mono text-sm sm:text-base font-bold text-white">
                         {formatGHS(featuredPiece.price)}
                       </div>
@@ -146,21 +148,17 @@ export const Hero = ({ productCount, sheetStatus, featuredProduct, onFeaturedCli
                     </div>
                   </div>
                 </div>
-
-                {/* Sub-card ticker info */}
-                <div className="mt-4 flex items-center justify-between px-2 text-xs font-mono text-neutral-300">
-                  <div className="flex items-center gap-1.5">
-                    <Shield className="w-4 h-4 text-emerald-400" />
-                    <span>CURATED SPECIFICATION</span>
-                  </div>
-                  <div className="text-white group-hover:text-amber-300 transition-colors flex items-center gap-1 uppercase tracking-wider text-xs font-bold">
-                    <span>Inspect</span>
-                    <ArrowDownRight className="w-3.5 h-3.5" />
-                  </div>
+                <div className="flex items-center justify-between gap-3 px-1 pt-3 text-xs font-mono text-neutral-300">
+                  <span className="flex items-center gap-1.5">
+                    <Shield className="h-4 w-4 text-amber-300" />
+                    Featured from the collection
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1 uppercase tracking-wider text-white group-hover:text-amber-300">
+                    View <ArrowDownRight className="h-3.5 w-3.5" />
+                  </span>
                 </div>
-              </div>
+              </button>
             </div>
-          </div>
           )}
         </div>
       </div>

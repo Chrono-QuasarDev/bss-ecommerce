@@ -3,6 +3,7 @@ import { Plus, Check, Eye } from 'lucide-react';
 import { formatGHS } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
 import { CONFIG } from '../config';
+import { PRODUCT_IMAGE_FALLBACK } from '../utils/imageFallback';
 
 export const ProductCard = ({ product, onQuickView }) => {
   const { cart, addToCart } = useCart();
@@ -20,12 +21,20 @@ export const ProductCard = ({ product, onQuickView }) => {
     variants[0] ||
     null;
   const variantAvailable = !hasVariants || Boolean(selectedVariant?.available);
+  const sizeOptions = [...new Set(variants.map((variant) => variant.size).filter(Boolean))];
+  const colorOptions = [...new Set(variants.map((variant) => variant.color).filter(Boolean))];
+  const chooseVariant = (predicate) => {
+    const match = variants.find((variant) => predicate(variant) && variant.available) ||
+      variants.find(predicate);
+    if (match) setSelectedVariantId(match.id);
+  };
 
-  const cartItem = cart.find((item) => {
-    if (item.id !== product.id) return false;
-    if (selectedVariant) return item.selectedVariantId === selectedVariant.id;
-    return item.selectedSize === selectedSize;
-  });
+  const cartItem = cart.find((item) =>
+    item.id === product.id && (selectedVariant
+      ? item.selectedVariantId === selectedVariant.id
+      : item.selectedSize === selectedSize)
+  );
+  // Total quantity of this product across all sizes for the badge
   const totalInBag = cart
     .filter((item) => item.id === product.id)
     .reduce((sum, item) => sum + item.quantity, 0);
@@ -43,9 +52,10 @@ export const ProductCard = ({ product, onQuickView }) => {
     setTimeout(() => setJustAdded(false), 1000);
   };
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=85';
+  const fallbackImage = PRODUCT_IMAGE_FALLBACK;
   const primaryImg = product.image || fallbackImage;
   const secondaryImg = product.secondaryImage || primaryImg;
+
   const sizes = ['S', 'M', 'L', 'XL'];
 
   return (
@@ -54,7 +64,9 @@ export const ProductCard = ({ product, onQuickView }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Visual Area with Dual-Photo Crossfade */}
       <div className="relative aspect-[3/4] w-full bg-[#0d0d12] overflow-hidden">
+        {/* Primary Image */}
         <img
           src={imgError ? fallbackImage : primaryImg}
           alt={product.imageAlt || product.name}
@@ -64,6 +76,8 @@ export const ProductCard = ({ product, onQuickView }) => {
             isHovered && product.secondaryImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
           }`}
         />
+
+        {/* Secondary Lookbook Image */}
         {product.secondaryImage && (
           <img
             src={secondaryImg}
@@ -75,10 +89,12 @@ export const ProductCard = ({ product, onQuickView }) => {
           />
         )}
 
+        {/* Top Badges */}
         <div className="absolute top-3 inset-x-3 flex items-start justify-between pointer-events-none">
           <span className="px-2.5 py-1 bg-black/80 backdrop-blur-md border border-white/15 text-neutral-200 font-mono text-[10px] tracking-wider uppercase rounded-full">
-            {product.category || 'Collection'}
+            {product.category || 'Atelier'}
           </span>
+
           {totalInBag > 0 ? (
             <span className="px-2.5 py-1 bg-white text-black font-mono text-[11px] font-bold tracking-wider uppercase rounded-full shadow-lg">
               IN BAG [{totalInBag}]
@@ -90,6 +106,7 @@ export const ProductCard = ({ product, onQuickView }) => {
           ) : null}
         </div>
 
+        {/* Floating Quick View Trigger Button */}
         <button
           type="button"
           onClick={(e) => {
@@ -106,14 +123,20 @@ export const ProductCard = ({ product, onQuickView }) => {
         </button>
       </div>
 
+      {/* Product Information Body */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+
+        {/* Name and Fabric Tag */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-mono text-neutral-400 uppercase tracking-wider">
             <span>REF // {product.id}</span>
-            {product.inStock === false && (
-              <span className="text-rose-300 font-medium">SOLD OUT</span>
+            {product.stock && (
+              <span className="text-amber-300 font-medium">
+                {product.stock} IN STOCK
+              </span>
             )}
           </div>
+
           <h3
             onClick={() => onQuickView(product)}
             className="text-base font-bold uppercase tracking-tight text-white font-heading hover:text-amber-200 transition-colors cursor-pointer line-clamp-1"
@@ -121,31 +144,52 @@ export const ProductCard = ({ product, onQuickView }) => {
           >
             {product.name}
           </h3>
+
           <p className="text-xs text-neutral-300 font-sans line-clamp-2 leading-relaxed">
             {product.fabric || product.description}
           </p>
         </div>
 
+        {/* Variant pills retain the original compact card treatment. */}
         {hasVariants ? (
-          <label className="block pt-2 border-t border-white/[0.08] space-y-1.5">
-            <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider">SIZE / COLOR</span>
-            <select
-              value={selectedVariant?.id || ''}
-              onChange={(event) => setSelectedVariantId(event.target.value)}
-              aria-label={`Choose an option for ${product.name}`}
-              className="w-full min-h-[38px] px-3 rounded-lg border border-white/20 bg-[#101014] text-white text-xs font-mono focus:outline-none focus:ring-2 focus:ring-amber-300"
-            >
-              {!variants.length && <option value="">Unavailable</option>}
-              {variants.map((variant) => {
-                const label = [variant.size, variant.color].filter(Boolean).join(' · ') || 'One size';
-                return (
-                  <option key={variant.id} value={variant.id} disabled={!variant.available}>
-                    {label}{variant.available ? '' : ' — Sold out'}
-                  </option>
-                );
-              })}
-            </select>
-          </label>
+          <div className="pt-2 border-t border-white/[0.08] space-y-2">
+            {sizeOptions.length > 0 && (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider font-medium">SIZE:</span>
+                <div className="flex flex-wrap justify-end gap-1.5 font-mono text-[10px]">
+                  {sizeOptions.map((size) => {
+                    const available = variants.some((variant) => variant.size === size && variant.available);
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        disabled={!available}
+                        onClick={() => chooseVariant((variant) => variant.size === size && (!selectedVariant?.color || variant.color === selectedVariant.color))}
+                        aria-label={`Select size ${size}`}
+                        aria-pressed={selectedVariant?.size === size}
+                        className={`min-w-8 min-h-8 px-2 rounded-full flex items-center justify-center border transition-all focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:opacity-35 disabled:line-through ${
+                          selectedVariant?.size === size
+                            ? 'border-white bg-white text-black font-bold shadow-glow-sm'
+                            : 'border-white/20 text-neutral-300 hover:border-white/40 hover:text-white bg-white/[0.03]'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {colorOptions.length > 0 && (
+              <div className="flex items-center justify-between gap-2 text-xs font-mono uppercase tracking-wider">
+                <span className="text-neutral-400">COLOR:</span>
+                <span className="max-w-[70%] truncate text-neutral-200" title={selectedVariant?.color || colorOptions.join(', ')}>
+                  {selectedVariant?.color || colorOptions.join(', ')}
+                </span>
+              </div>
+            )}
+            {!variantAvailable && <p className="text-[10px] font-mono uppercase text-rose-300">Sold out</p>}
+          </div>
         ) : (
           <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
             <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider font-medium">SIZE:</span>
@@ -170,27 +214,42 @@ export const ProductCard = ({ product, onQuickView }) => {
           </div>
         )}
 
+        {/* Price & Add to Bag Trigger */}
         <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between gap-3">
           <div>
-            <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest font-medium">PRICE ({CONFIG.CURRENCY_CODE})</div>
+            <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest font-medium">
+              PRICE ({CONFIG.CURRENCY_CODE})
+            </div>
             <div className="font-mono text-base sm:text-lg font-extrabold text-white tracking-tight">
               {formatGHS(product.price)}
             </div>
           </div>
+
           <button
             type="button"
             onClick={handleAdd}
             disabled={!variantAvailable}
             aria-label={`Add ${product.name} to bag`}
-            className={`min-h-[42px] px-4 py-2.5 rounded-full text-xs font-mono uppercase tracking-[0.12em] font-bold border transition-all duration-200 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:opacity-45 disabled:cursor-not-allowed ${
+            className={`min-h-[42px] disabled:opacity-40 disabled:cursor-not-allowed px-4 py-2.5 rounded-full text-xs font-mono uppercase tracking-[0.12em] font-bold border transition-all duration-200 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-amber-300 ${
               justAdded
                 ? 'bg-emerald-400 text-black border-emerald-400 shadow-glow'
                 : 'bg-white hover:bg-amber-200 text-black border-white hover:border-amber-200 shadow-glow-sm hover:scale-105 active:scale-95'
             }`}
           >
-            {justAdded ? <><Check className="w-3.5 h-3.5" /><span>ADDED</span></> : <><Plus className="w-3.5 h-3.5" /><span>{variantAvailable ? 'BAG' : 'SOLD OUT'}</span></>}
+            {justAdded ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>ADDED</span>
+              </>
+            ) : (
+              <>
+                <Plus className="w-3.5 h-3.5" />
+                <span>BAG</span>
+              </>
+            )}
           </button>
         </div>
+
       </div>
     </article>
   );
