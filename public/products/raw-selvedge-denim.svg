@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000" fill="none">
+    <rect width="800" height="1000" fill="#18181b"/>
+    <rect x="40" y="40" width="720" height="920" rx="16" stroke="#27272a" stroke-width="2"/>
+    <circle cx="400" cy="450" r="140" fill="#27272a"/>
+    <text x="400" y="455" font-family="monospace" font-size="14" fill="#a1a1aa" text-anchor="middle" font-weight="bold">B.S.S ATELIER</text>
+    <text x="400" y="650" font-family="sans-serif" font-size="20" fill="#f4f4f5" text-anchor="middle" font-weight="bold" letter-spacing="2">RAW SELVEDGE DENIM</text>
+    <text x="400" y="685" font-family="monospace" font-size="12" fill="#71717a" text-anchor="middle">ACCRA · PROTOTYPE ARCHIVE</text>
+  </svg>
