@@ -2,11 +2,13 @@ name = "bss-ecommerce"
 pages_build_output_dir = "dist"
 compatibility_date = "2024-09-23"
 
+# D1 Database binding (attached in Cloudflare Pages Dashboard or locally)
 [[d1_databases]]
 binding = "DB"
 database_name = "serverless-wa-store-db"
 database_id = "local-d1-placeholder"
 
-[[r2_buckets]]
-binding = "PREMIUM_BUCKET"
-bucket_name = "serverless-wa-store-premium"
+# R2 bucket binding is deferred until payment card is linked on Cloudflare
+# [[r2_buckets]]
+# binding = "PREMIUM_BUCKET"
+# bucket_name = "serverless-wa-store-premium"

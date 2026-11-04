@@ -1,0 +1,19 @@
+---
+import { CONFIG } from '../config.ts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{CONFIG.BRAND_NAME} — {CONFIG.STORE_SUBTITLE}</title>
+  </head>
+  <body class="bg-[#0A0A0C] text-[#F4F4F5] font-sans min-h-screen flex items-center justify-center">
+    <main class="text-center p-6">
+      <h1 class="text-4xl font-bold tracking-widest uppercase mb-2">{CONFIG.BRAND_NAME}</h1>
+      <p class="text-sm text-neutral-400 font-mono uppercase tracking-wider">{CONFIG.STORE_SUBTITLE}</p>
+      <p class="mt-4 text-xs text-neutral-500">{CONFIG.STORE_TAGLINE} · {CONFIG.STORE_CITY}, {CONFIG.STORE_COUNTRY}</p>
+    </main>
+  </body>
+</html>
