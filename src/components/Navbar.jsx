@@ -100,21 +100,23 @@ export const Navbar = ({ onOpenSheetConfig, onOpenSearch }) => {
               <Clock className="w-3.5 h-3.5 text-amber-300" />
               <span className="hidden sm:inline">MY ORDERS</span>
               {orderHistory.length > 0 && (
-                <span className="inline-flex items-center justify-center bg-white text-black text-[10px] w-4 h-4 rounded-full font-bold">
+                <span className="inline-flex items-center justify-center h-4 bg-white text-black text-[10px] w-4 h-4 rounded-full font-bold">
                   {orderHistory.length}
                 </span>
               )}
             </button>
 
-            {/* CMS Config Button for Client/Testing */}
-            <button
-              onClick={onOpenSheetConfig}
-              aria-label="Configure Google Sheets CMS"
-              className="hidden md:flex p-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.08] rounded-full border border-transparent hover:border-white/15 transition-all focus:outline-none focus:ring-2 focus:ring-amber-300/70"
-              title="Configure Google Sheet CMS"
-            >
-              <ShieldCheck className="w-4 h-4" />
-            </button>
+            {/* Legacy CSV configuration is hidden when the Apps Script API is active. */}
+            {!CONFIG.CATALOG_API_URL && (
+              <button
+                onClick={onOpenSheetConfig}
+                aria-label="Configure Google Sheets CMS"
+                className="hidden md:flex p-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.08] rounded-full border border-transparent hover:border-white/15 transition-all focus:outline-none focus:ring-2 focus:ring-amber-300/70"
+                title="Configure Google Sheet CMS"
+              >
+                <ShieldCheck className="w-4 h-4" />
+              </button>
+            )}
 
             {/* Slide-out Cart Trigger Button */}
             <button

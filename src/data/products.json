@@ -1,0 +1,106 @@
+[
+  {
+    "id": "monolith-box-tee",
+    "name": "Monolith Heavyweight Box Tee",
+    "category": "Tops",
+    "price": 280,
+    "description": "Structured architectural silhouette featuring reinforced double-needle neck ribbing and dropped shoulders. Cut and assembled in Accra.",
+    "images": [
+      "/products/monolith-box-tee.svg"
+    ],
+    "sizes": ["S", "M", "L", "XL"],
+    "soldOut": false,
+    "featured": true
+  },
+  {
+    "id": "obsidian-parka",
+    "name": "Obsidian French Terry Hooded Parka",
+    "category": "Outerwear",
+    "price": 590,
+    "description": "Sculptural double-layered rigid storm hood with concealed seam pockets and matte blackened industrial hardware.",
+    "images": [
+      "/products/obsidian-parka.svg"
+    ],
+    "sizes": ["S", "M", "L", "XL"],
+    "soldOut": false,
+    "featured": true
+  },
+  {
+    "id": "pleated-noir-trousers",
+    "name": "Tapered Pleated Noir Trousers",
+    "category": "Bottoms",
+    "price": 440,
+    "description": "Double deep origami front pleats yielding an effortless fluid drape. Engineered with an adjustable side-tab waistband.",
+    "images": [
+      "/products/pleated-noir-trousers.svg"
+    ],
+    "sizes": ["30", "32", "34", "36"],
+    "soldOut": false,
+    "featured": true
+  },
+  {
+    "id": "merino-mockneck",
+    "name": "Seamless Fine Merino Mockneck",
+    "category": "Tops",
+    "price": 420,
+    "description": "3D whole-garment circular knit eliminating side seams for frictionless second-skin comfort in climate transitions.",
+    "images": [
+      "/products/merino-mockneck.svg"
+    ],
+    "sizes": ["S", "M", "L", "XL"],
+    "soldOut": false,
+    "featured": false
+  },
+  {
+    "id": "french-terry-hoodie",
+    "name": "Overcast Heavy French Terry Hoodie",
+    "category": "Tops",
+    "price": 350,
+    "description": "High-density 480 GSM combed cotton with raw edge cuffs and tailored kangaroo hand-warmer pocket.",
+    "images": [
+      "/products/french-terry-hoodie.svg"
+    ],
+    "sizes": ["S", "M", "L", "XL"],
+    "soldOut": false,
+    "featured": false
+  },
+  {
+    "id": "utilitarian-overshirt",
+    "name": "Structured Utilitarian Overshirt",
+    "category": "Outerwear",
+    "price": 640,
+    "description": "Tailored modular overshirt with concealed horn button placket and twin bellow chest cargo compartments.",
+    "images": [
+      "/products/utilitarian-overshirt.svg"
+    ],
+    "sizes": ["M", "L", "XL"],
+    "soldOut": false,
+    "featured": false
+  },
+  {
+    "id": "heavy-canvas-bomber",
+    "name": "Archival Heavy Canvas Flight Bomber",
+    "category": "Outerwear",
+    "price": 520,
+    "description": "Pre-washed rugged duck canvas shell lined with thermal cupro. Internal webbing carry harness.",
+    "images": [
+      "/products/heavy-canvas-bomber.svg"
+    ],
+    "sizes": ["S", "M", "L"],
+    "soldOut": true,
+    "featured": false
+  },
+  {
+    "id": "raw-selvedge-denim",
+    "name": "16oz Raw Selvedge Architectural Denim",
+    "category": "Bottoms",
+    "price": 590,
+    "description": "Shuttle-loom woven rigid selvedge denim. Hand-finished with solid copper rivets and debossed leather patch.",
+    "images": [
+      "/products/raw-selvedge-denim.svg"
+    ],
+    "sizes": ["30", "32", "34", "36"],
+    "soldOut": false,
+    "featured": false
+  }
+]

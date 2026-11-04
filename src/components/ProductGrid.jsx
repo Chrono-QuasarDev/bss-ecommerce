@@ -6,6 +6,8 @@ import {
   RotateCcw,
   Sparkles,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 
 export const ProductGrid = ({
@@ -19,6 +21,15 @@ export const ProductGrid = ({
   onResetFilters,
   onQuickView,
 }) => {
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
+  const pageProducts = products.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [products]);
+
   // 1. Deliberate, high-contrast loading state
   if (loading) {
     return (
@@ -66,11 +77,10 @@ export const ProductGrid = ({
             <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
             <div>
               <div className="font-heading font-bold text-white text-xs sm:text-sm tracking-wide">
-                GOOGLE SHEETS CMS SYNC NOTICE
+                COLLECTION UNAVAILABLE
               </div>
               <div className="text-xs text-neutral-300 font-sans leading-relaxed">
-                Could not connect to the live sheet. Showing the saved
-                collection.
+                We couldn't load the collection right now. Please try again.
               </div>
             </div>
           </div>
@@ -153,8 +163,8 @@ export const ProductGrid = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-            {products.map((product) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
+            {pageProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -162,6 +172,37 @@ export const ProductGrid = ({
               />
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <nav className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-between" aria-label="Product catalog pagination">
+              <p className="text-xs font-mono text-neutral-400" aria-live="polite">
+                Showing {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, products.length)} of {products.length} products
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                  className="min-h-11 px-4 rounded-full border border-white/20 text-white text-xs font-mono uppercase tracking-wider hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-amber-300"
+                  aria-label="Previous page of products"
+                >
+                  <span className="inline-flex items-center gap-1.5"><ChevronLeft className="h-4 w-4" />Previous</span>
+                </button>
+                <span className="min-w-20 text-center text-xs font-mono text-neutral-300" aria-current="page">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                  disabled={currentPage === totalPages}
+                  className="min-h-11 px-4 rounded-full border border-white/20 text-white text-xs font-mono uppercase tracking-wider hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-amber-300"
+                  aria-label="Next page of products"
+                >
+                  <span className="inline-flex items-center gap-1.5">Next<ChevronRight className="h-4 w-4" /></span>
+                </button>
+              </div>
+            </nav>
+          )}
         </>
       )}
     </div>

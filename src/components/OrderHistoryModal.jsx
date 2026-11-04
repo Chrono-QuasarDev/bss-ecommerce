@@ -49,7 +49,7 @@ export const OrderHistoryModal = () => {
       />
 
       <div className="min-h-full flex items-center justify-center p-4">
-        <div className="relative w-full max-w-2xl glass-panel rounded-3xl border border-white/15 p-6 sm:p-8 font-mono text-white shadow-2xl my-8">
+        <div className="relative w-full max-w-3xl glass-panel rounded-3xl border border-white/15 p-4 sm:p-8 font-mono text-white shadow-2xl my-8">
           {/* Header */}
           <div className="flex items-center justify-between pb-5 border-b border-white/10">
             <div className="flex items-center gap-3">
@@ -57,10 +57,10 @@ export const OrderHistoryModal = () => {
                 <Receipt className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white font-heading">
+                <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white font-heading whitespace-nowrap">
                   LOCAL ORDER REQUESTS
                 </h2>
-                <div className="text-xs text-neutral-400">
+                <div className="text-[10px] sm:text-xs text-neutral-400 whitespace-nowrap">
                   {orderHistory.length}{" "}
                   {orderHistory.length === 1
                     ? "REQUEST RECORDED"
@@ -90,9 +90,8 @@ export const OrderHistoryModal = () => {
                   <p className="font-heading text-base uppercase tracking-wider font-bold text-white">
                     NO SAVED ORDER REQUESTS
                   </p>
-                  <p className="text-xs text-neutral-300 font-sans max-w-xs mx-auto leading-relaxed">
-                    When you send an order request via WhatsApp, a copy is
-                    automatically saved on this device for your reference.
+                  <p className="text-xs text-neutral-300 font-sans whitespace-nowrap leading-relaxed">
+                    Saved on this device for your reference.
                   </p>
                 </div>
               </div>
@@ -100,12 +99,12 @@ export const OrderHistoryModal = () => {
               orderHistory.map((order) => (
                 <div
                   key={order.id}
-                  className="rounded-2xl border border-white/15 p-5 space-y-4 bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                  className="rounded-2xl border border-white/15 p-4 sm:p-5 space-y-4 bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
                 >
                   {/* Top Bar */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-white font-mono">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white font-mono whitespace-nowrap">
                         REF: {order.id}
                       </span>
                       <button
@@ -128,7 +127,7 @@ export const OrderHistoryModal = () => {
                       </button>
                     </div>
 
-                    <div className="text-xs text-neutral-400">
+                    <div className="text-[10px] sm:text-xs text-neutral-400 whitespace-nowrap">
                       {formatDateTime(order.createdAt)}
                     </div>
                   </div>
@@ -138,13 +137,13 @@ export const OrderHistoryModal = () => {
                     {order.items.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex justify-between items-center text-neutral-200"
+                        className="flex items-center justify-between gap-3 text-neutral-200"
                       >
-                        <span className="line-clamp-1">
+                        <span className="min-w-0 flex-1 truncate whitespace-nowrap">
                           {item.quantity}x {item.name}{" "}
                           {item.selectedSize ? `(${item.selectedSize})` : ""}
                         </span>
-                        <span className="font-bold text-white flex-shrink-0">
+                        <span className="font-bold text-white flex-shrink-0 whitespace-nowrap">
                           {formatGHS(item.price * item.quantity)}
                         </span>
                       </div>
@@ -153,14 +152,16 @@ export const OrderHistoryModal = () => {
 
                   {/* Order Footer */}
                   <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-neutral-400 uppercase tracking-widest text-xs">
-                        TOTAL:
-                      </span>
-                      <span className="font-bold text-base text-gold-metallic">
-                        {formatGHS(order.total)}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-full border border-white/20 bg-white/5 text-[11px] text-neutral-300 uppercase tracking-wider flex items-center gap-1 font-mono">
+                    <div className="flex flex-col sm:flex-row items-center gap-2.5">
+                      <div className="flex items-center justify-center gap-2.5 whitespace-nowrap">
+                        <span className="text-neutral-400 uppercase tracking-widest text-xs">
+                          TOTAL:
+                        </span>
+                        <span className="font-bold text-base text-gold-metallic whitespace-nowrap">
+                          {formatGHS(order.total)}
+                        </span>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full border border-white/20 bg-white/5 text-[10px] sm:text-[11px] text-neutral-300 uppercase tracking-wider flex items-center gap-1 font-mono whitespace-nowrap">
                         <Clock className="w-3 h-3 text-amber-300" />
                         <span>REQUEST LOGGED</span>
                       </span>
@@ -169,7 +170,7 @@ export const OrderHistoryModal = () => {
                     <button
                       type="button"
                       onClick={() => handleInquire(order.id)}
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white text-black hover:bg-amber-200 rounded-full font-bold uppercase text-xs tracking-wider transition-all shadow-glow-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-white text-black hover:bg-amber-200 rounded-full font-bold uppercase text-[10px] sm:text-xs tracking-wider transition-all shadow-glow-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 whitespace-nowrap"
                     >
                       <span>Inquire via WhatsApp</span>
                       <ExternalLink className="w-3.5 h-3.5" />

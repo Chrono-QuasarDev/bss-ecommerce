@@ -12,6 +12,11 @@ export const CONFIG = {
   CURRENCY_CODE: import.meta.env.VITE_CURRENCY_CODE || "GHS",
   CURRENCY_LOCALE: import.meta.env.VITE_CURRENCY_LOCALE || "en-GH",
   WHATSAPP_PHONE: import.meta.env.VITE_WHATSAPP_PHONE || "",
+  // Public read-only Apps Script catalog endpoint; this URL is not a secret.
+  CATALOG_API_URL:
+    import.meta.env.VITE_CATALOG_API_URL ||
+    "https://script.google.com/macros/s/AKfycbwY20L5nXvAGjXImdwnJMhE5nHQWqKtxj6xLo93iB7K6iAjlsLUgvoNXDCaTSGH1NG9/exec",
+  // Legacy published-CSV fallback; use CATALOG_API_URL for Products/Variants tabs.
   SHEET_CSV_URL: import.meta.env.VITE_SHEET_CSV_URL || "",
   WEBHOOK_URL: import.meta.env.VITE_WEBHOOK_URL || "",
   VIP_PIN: import.meta.env.VITE_VIP_PIN || "",

@@ -68,6 +68,8 @@ export const CartDrawer = () => {
         id: item.id,
         name: item.name,
         size: item.selectedSize || "Standard",
+        color: item.selectedColor || "",
+        variantId: item.selectedVariantId || "",
         quantity: item.quantity,
         price: item.price,
         lineTotal: item.price * item.quantity,
@@ -265,7 +267,7 @@ export const CartDrawer = () => {
               <div className="space-y-4 divide-y divide-white/[0.08]">
                 {cart.map((item) => (
                   <div
-                    key={`${item.id}-${item.selectedSize}`}
+                    key={`${item.id}-${item.selectedVariantId || `${item.selectedSize || ''}::${item.selectedColor || ''}`}`}
                     className="pt-4 first:pt-0 flex gap-4"
                   >
                     {/* Thumbnail */}
@@ -275,9 +277,9 @@ export const CartDrawer = () => {
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
-                      {item.selectedSize && (
+                      {(item.selectedSize || item.selectedColor) && (
                         <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-sm bg-black/85 font-mono text-[10px] text-white font-bold">
-                          {item.selectedSize}
+                          {[item.selectedSize, item.selectedColor].filter(Boolean).join(' · ')}
                         </div>
                       )}
                     </div>
@@ -289,15 +291,15 @@ export const CartDrawer = () => {
                           <h4 className="text-xs uppercase font-bold text-white font-heading line-clamp-1">
                             {item.name}
                           </h4>
-                          {item.selectedSize && (
+                          {(item.selectedSize || item.selectedColor) && (
                             <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono font-bold text-neutral-200 uppercase tracking-wider flex-shrink-0">
-                              {item.selectedSize}
+                              {[item.selectedSize, item.selectedColor].filter(Boolean).join(' · ')}
                             </span>
                           )}
                           <button
                             type="button"
                             onClick={() =>
-                              removeFromCart(item.id, item.selectedSize)
+                              removeFromCart(item.id, item.selectedVariantId || `${item.selectedSize || ''}::${item.selectedColor || ''}`)
                             }
                             className="text-neutral-400 hover:text-white p-1 transition-colors focus:outline-none focus:ring-1 focus:ring-white rounded"
                             aria-label={`Remove ${item.name} from bag`}
@@ -316,7 +318,7 @@ export const CartDrawer = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              updateQuantity(item.id, item.selectedSize, -1)
+                              updateQuantity(item.id, item.selectedVariantId || `${item.selectedSize || ''}::${item.selectedColor || ''}`, -1)
                             }
                             className="p-1.5 text-neutral-300 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-white rounded-l-full"
                             aria-label="Decrease quantity"
@@ -332,7 +334,7 @@ export const CartDrawer = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              updateQuantity(item.id, item.selectedSize, 1)
+                              updateQuantity(item.id, item.selectedVariantId || `${item.selectedSize || ''}::${item.selectedColor || ''}`, 1)
                             }
                             className="p-1.5 text-neutral-300 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-white rounded-r-full"
                             aria-label="Increase quantity"

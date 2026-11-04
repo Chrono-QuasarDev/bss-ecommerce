@@ -22,10 +22,9 @@ import { formatGHS } from "./formatters.js";
 export const formatOrderString = (orderId, items, totalAmount) => {
   const itemsText = items
     .map((item) => {
-      const sizeSuffix = item.selectedSize
-        ? ` — Size ${item.selectedSize}`
-        : "";
-      return `${item.quantity}x ${item.name}${sizeSuffix} (${formatGHS(item.price * item.quantity)})`;
+      const options = [item.selectedSize, item.selectedColor].filter(Boolean);
+      const optionSuffix = options.length ? ` — ${options.join(' / ')}` : "";
+      return `${item.quantity}x ${item.name}${optionSuffix} (${formatGHS(item.price * item.quantity)})`;
     })
     .join("\n");
 
